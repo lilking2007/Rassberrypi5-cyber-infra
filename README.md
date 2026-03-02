@@ -1,6 +1,3 @@
-# Rassberrypi5-cyber-infra
-Raspberry Pi 5 cybersecurity infrastructure: Docker-based Pi-hole DNS security, ntopng network monitoring, n8n automation, Portainer dashboard. Blue-team foundation for attack/defense homelab (Pi 5 → Dell Kali → Surface Pro 7 victim). Reproducible via docker-compose.yml.
-
 # 🚀 My Raspberry Pi 5 Home Lab – Cybersecurity Infrastructure
 
 **I built this self-hosted lab on my Raspberry Pi 5** to create a professional-grade monitoring, DNS security, and automation environment for my cybersecurity studies.
