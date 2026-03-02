@@ -10,10 +10,10 @@ Raspberry Pi 5 cybersecurity infrastructure: Docker-based Pi-hole DNS security, 
 ## 🛠 My Hardware Setup
 
 Raspberry Pi 5 (8GB)
-├── 256GB microSD card (Class 10 A2)
-├── Official 27W USB-C power supply
-├── Ethernet cable (monitoring accuracy)
-└── Heatsink + fan (24/7 stability)
+- ├── 256GB microSD card (Class 10 A2)
+- ├── Official 27W USB-C power supply
+- ├── Ethernet cable (monitoring accuracy)
+- └── Heatsink + fan (24/7 stability)
 
  
 
