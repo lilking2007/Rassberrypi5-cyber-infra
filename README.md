@@ -3,16 +3,11 @@ Raspberry Pi 5 cybersecurity infrastructure: Docker-based Pi-hole DNS security, 
 
 # 🚀 My Raspberry Pi 5 Home Lab – Cybersecurity Infrastructure
 
-**I built this self-hosted lab on my Raspberry Pi 5** to create a professional-grade monitoring, DNS security, and automation environment for my cybersecurity studies. Everything runs in Docker containers managed through Portainer – accessible from any device on my network.
-
-This is the **foundation** for my attack/defense lab:
-- **Pi 5**: Monitoring, DNS filtering, automation hub  
-- **Dell Latitude i7**: Kali VMs (attacker)  
-- **Surface Pro 7**: Windows victim machine
+**I built this self-hosted lab on my Raspberry Pi 5** to create a professional-grade monitoring, DNS security, and automation environment for my cybersecurity studies.
 
 ---
 
-## 🛠 **My Hardware Setup**
+## 🛠 My Hardware Setup
 
 Raspberry Pi 5 (8GB)
 ├── 256GB microSD card (Class 10 A2)
@@ -22,206 +17,235 @@ Raspberry Pi 5 (8GB)
 
 text
 
-**Base OS:** Raspberry Pi OS 64-bit (Lite) – flashed with Raspberry Pi Imager
+**Base OS:** Raspberry Pi OS 64-bit (Lite)
 
 ---
 
-## 📋 **My Step-by-Step Setup Process**
+## 📋 My Complete Step-by-Step Setup
 
 ### **Phase 1: Fresh OS → Docker (10 mins)**
-```bash
-# First boot - expand filesystem + update
-sudo raspi-config  # Advanced → Expand Filesystem → Reboot
 
-# Install Docker
+**Step 1.1 - First boot setup:**
+sudo raspi-config
+
+→ Advanced Options → Expand Filesystem → Finish → Reboot
+text
+
+**Step 1.2 - Install Docker:**
+sudo apt update && sudo apt upgrade -y
 curl -sSL https://get.docker.com | sh
 sudo usermod -aG docker $USER
-newgrp docker  # or reboot
-Test: docker run hello-world ✅
-
-Phase 2: Portainer Dashboard (My Control Center)
-bash
-docker volume create portainer_data
-docker run -d \
-  --name portainer \
-  -p 9443:9443 \
-  --restart=always \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  -v portainer_data:/data \
-  portainer/portainer-ce:latest
-Access: https://192.168.20.13:9443
-
-Create admin account
-
-Connect local Docker
-
-Browser control ready
-
-Phase 3: Pi-hole (Network Protection)
-bash
-mkdir -p ~/pihole/{etc-pihole,etc-dnsmasq.d}
-Portainer → Add container:
+newgrp docker
 
 text
+
+**Step 1.3 - Test Docker:**
+docker run hello-world
+
+text
+
+---
+
+### **Phase 2: Portainer Dashboard (5 mins)**
+
+**Step 2.1 - Create Portainer:**
+docker volume create portainer_data
+docker run -d
+--name portainer
+-p 9443:9443
+--restart=always
+-v /var/run/docker.sock:/var/run/docker.sock
+-v portainer_data:/data
+portainer/portainer-ce:latest
+
+text
+
+**Step 2.2 - Access dashboard:**
+https://YOUR_PI_IP:9443
+
+text
+*Accept self-signed certificate → Create admin account → Connect Local Docker*
+
+---
+
+### **Phase 3: Pi-hole DNS Security (5 mins)**
+
+**Step 3.1 - Prepare folders:**
+mkdir -p ~/pihole/{etc-pihole,etc-dnsmasq.d}
+
+text
+
+**Step 3.2 - Portainer deployment:**
+Portainer → Containers → Add container
 Name: pihole
 Image: pihole/pihole:latest
-Network: host
-Volumes: ~/pihole/etc-pihole:/etc/pihole, ~/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
-Env: TZ=Australia/Sydney, WEBPASSWORD=SecurePiHole2026!
-Cap_add: NET_ADMIN
-Access: http://192.168.20.13/admin
+Network Mode: host
+Volumes:
 
-Phase 4: n8n Automation
-bash
-mkdir -p ~/n8n_data && sudo chown -R 1000:1000 ~/n8n_data
-bash
-docker run -d \
-  --name n8n \
-  -p 5678:5678 \
-  -v ~/n8n_data:/home/node/.n8n \
-  -e N8N_BASIC_AUTH_ACTIVE=true \
-  -e N8N_BASIC_AUTH_USER=ryan \
-  -e N8N_BASIC_AUTH_PASSWORD=SecureN8N2026! \
-  n8nio/n8n:latest
-Access: http://192.168.20.13:5678
+/home/lilking/pihole/etc-pihole:/etc/pihole
 
-Phase 5: Filebrowser
-Portainer → Add:
+/home/lilking/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+Environment:
+
+TZ=Australia/Sydney
+
+WEBPASSWORD=SecurePiHole2026!
+
+PIHOLE_DNS_=8.8.8.8
+Capabilities: NET_ADMIN
+Restart Policy: Always
 
 text
+
+**Step 3.3 - Access:**
+http://YOUR_PI_IP/admin
+
+text
+
+---
+
+### **Phase 4: n8n Automation (5 mins)**
+
+**Step 4.1 - Prepare data:**
+mkdir -p ~/n8n_data
+sudo chown -R 1000:1000 ~/n8n_data
+
+text
+
+**Step 4.2 - Deploy n8n:**
+docker run -d
+--name n8n
+-p 5678:5678
+--restart unless-stopped
+-v ~/n8n_data:/home/node/.n8n
+-e N8N_BASIC_AUTH_ACTIVE=true
+-e N8N_BASIC_AUTH_USER=ryan
+-e N8N_BASIC_AUTH_PASSWORD=SecureN8N2026!
+-e TZ=Australia/Sydney
+n8nio/n8n:latest
+
+text
+
+**Step 4.3 - Access:**
+http://YOUR_PI_IP:5678
+
+text
+
+---
+
+### **Phase 5: Filebrowser (3 mins)**
+
+**Step 5.1 - Portainer deployment:**
+Portainer → Add container
 Name: filebrowser
 Image: filebrowser/filebrowser:latest
 Ports: 8082:80
 Volumes: /:/srv
-Access: http://192.168.20.13:8082 (admin/admin)
-
-Phase 6: ntopng Monitoring
-bash
-mkdir -p ~/ntopng_data
-Portainer → Add:
+Environment: FB_DATABASE=/database/filebrowser.db
+Restart Policy: Always
 
 text
+
+**Step 5.2 - Access:**
+http://YOUR_PI_IP:8082
+
+text
+*Username: admin / Password: admin*
+
+---
+
+### **Phase 6: ntopng Network Monitor (5 mins)**
+
+**Step 6.1 - Prepare data:**
+mkdir -p ~/ntopng_data
+
+text
+
+**Step 6.2 - Portainer deployment:**
+Portainer → Add container
 Name: ntopng
 Image: ntop/ntopng:latest
 Ports: 3000:3000
-Volumes: ~/ntopng_data:/var/lib/ntopng, /proc:/host/proc:ro
-Network: host
-Privileged: true
-Access: http://192.168.20.13:3000
+Volumes:
 
-🎯 Service Access
-Service	URL	Username	Password
-Portainer	https://PI_IP:9443	admin	(your choice)
-Pi-hole	http://PI_IP/admin	-	SecurePiHole2026!
-n8n	http://PI_IP:5678	ryan	SecureN8N2026!
-Filebrowser	http://PI_IP:8082	admin	admin
-ntopng	http://PI_IP:3000	admin	admin
-PI_IP: hostname -I | awk '{print $1}'
+~/ntopng_data:/var/lib/ntopng
 
-🔧 My Troubleshooting Notes
-Issue	My Fix
-Docker permissions	newgrp docker
-Pi-hole DNS	Router DNS → PI_IP
-n8n permissions	sudo chown -R 1000:1000 ~/n8n_data
-ntopng no traffic	Network host + Privileged true
-📁 Repository Structure
+/proc:/host/proc:ro
+Network Mode: host
+Privileged Mode: true
+Restart Policy: Always
+
 text
-├── docker-compose.yml
-├── README.md (this file)
-├── setup-guide.md (detailed notes)
-├── services/ (per-service docs + screenshots)
-├── scripts/
-│   ├── install-all.sh
-│   └── backup-config.sh
-└── config/
-    └── .env.example
-✅ My Progress Checklist
-Phase 1: Base System
- Raspberry Pi OS 64-bit flashed
 
- System updated (sudo apt upgrade)
+**Step 6.3 - Access:**
+http://YOUR_PI_IP:3000
 
- Docker installed and tested (docker run hello-world)
+text
 
- User added to docker group (newgrp docker)
+---
 
-Phase 2: Portainer
- Portainer container running
+## 🎯 Service Access Summary
 
- Dashboard accessible (https://PI_IP:9443)
+| Service      | URL                    | Username | Password            |
+|--------------|-----------------------|----------|---------------------|
+| Portainer    | `https://PI_IP:9443`  | admin    | (your choice)       |
+| Pi-hole      | `http://PI_IP/admin`  | -        | `SecurePiHole2026!` |
+| n8n          | `http://PI_IP:5678`   | ryan     | `SecureN8N2026!`    |
+| Filebrowser  | `http://PI_IP:8082`   | admin    | admin               |
+| ntopng       | `http://PI_IP:3000`   | admin    | admin               |
 
- Local Docker environment connected
+**Get PI_IP:** `hostname -I | awk '{print $1}'`
 
- Screenshot saved: services/portainer/screenshots/portainer-dashboard.png
+---
 
-Phase 3: Pi-hole
- Config folders created (~/pihole/)
+## ✅ My Progress Checklist
 
- Pi-hole deployed via Portainer
+### **Phase 1: Base System**
+- [ ] OS flashed + expanded
+- [ ] Docker installed + tested
+- [ ] Docker group access
 
- Admin interface accessible (http://PI_IP/admin)
+### **Phase 2: Portainer** ⏳
+- [ ] Portainer running
+- [ ] Dashboard accessible
+- [ ] **Recipe:** `docker run --rm -v /var/run/docker.sock:/var/run/docker.sock ghcr.io/red5d/docker-autocompose portainer`
 
- Router DNS points to Pi IP
+### **Phase 3: Pi-hole** ⏳
+- [ ] Folders created
+- [ ] Container deployed
+- [ ] Admin panel working
+- [ ] **Recipe:** `docker run --rm -v /var/run/docker.sock:/var/run/docker.sock ghcr.io/red5d/docker-autocompose pihole`
 
- Screenshot saved: services/pihole/screenshots/pihole-stats.png
+### **Phase 4: n8n** ⏳
+- [ ] Data folder ready
+- [ ] n8n accessible
+- [ ] **Recipe:** `docker run --rm -v /var/run/docker.sock:/var/run/docker.sock ghcr.io/red5d/docker-autocompose n8n`
 
- Recipe generated: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock ghcr.io/red5d/docker-autocompose pihole
+### **Phase 5: Filebrowser** ⏳
+- [ ] File manager working
+- [ ] **Recipe:** `docker run --rm -v /var/run/docker.sock:/var/run/docker.sock ghcr.io/red5d/docker-autocompose filebrowser`
 
-Phase 4: n8n
- Data folder prepared (~/n8n_data)
+### **Phase 6: ntopng** ⏳
+- [ ] Traffic monitoring live
+- [ ] **Recipe:** `docker run --rm -v /var/run/docker.sock:/var/run/docker.sock ghcr.io/red5d/docker-autocompose ntopng`
 
- n8n container running
+### **FINAL: Full Stack Recipe**
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock
+ghcr.io/red5d/docker-autocompose $(docker ps -q) > docker-compose.yml
 
- Web UI accessible (http://PI_IP:5678)
+text
 
- First workflow created
+---
 
- Screenshot saved: services/n8n/screenshots/n8n-workflows.png
+## 🔧 Issues I've Fixed
 
- Recipe generated: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock ghcr.io/red5d/docker-autocompose n8n
+| Problem                | Solution                           |
+|------------------------|------------------------------------|
+| Docker permissions     | `newgrp docker`                    |
+| Pi-hole DNS            | Router DNS → PI_IP                 |
+| n8n folder permissions | `sudo chown -R 1000:1000 ~/n8n_data` |
+| ntopng no traffic      | Network `host` + Privileged `true` |
 
-Phase 5: Filebrowser
- Container deployed
+---
 
- File manager accessible (http://PI_IP:8082)
-
- Screenshot saved: services/filebrowser/screenshots/filebrowser.png
-
- Recipe generated: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock ghcr.io/red5d/docker-autocompose filebrowser
-
-Phase 6: ntopng
- Data folder created (~/ntopng_data)
-
- Monitoring running
-
- Traffic visible (http://PI_IP:3000)
-
- Screenshot saved: services/ntopng/screenshots/ntopng-traffic.png
-
- Recipe generated: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock ghcr.io/red5d/docker-autocompose ntopng
-
-Final Step: FULL Stack Recipe
-bash
-# Generate COMPLETE docker-compose.yml for ALL containers
-docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-  ghcr.io/red5d/docker-autocompose $(docker ps -q) > docker-compose.yml
-🎓 My Learning Goals
-Bachelor of Cybersecurity (Western Sydney University):
-
-✅ Docker orchestration + container security
-
-✅ Network defense (Pi-hole deployment)
-
-⏳ Blue team monitoring (ntopng traffic analysis)
-
-⏳ Security automation (n8n workflows)
-
-⏳ Portfolio-ready documentation
-
-🚀 Reproduce My Lab
-bash
-git clone https://github.com/lilking2007/raspberry-pi-home-lab
-cd raspberry-pi-home-lab
-cp config/.env.example config/.env  # Edit passwords
-docker compose up -d
-35 minutes from fresh SD card → production cybersecurity lab.
+> **This is my real production lab.** I use it to monitor attacks from my Dell Kali VMs → Surface Pro 7 victim machine. Every single command above is exactly what I ran to build it.
