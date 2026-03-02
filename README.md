@@ -76,11 +76,11 @@ mkdir -p ~/pihole/{etc-pihole,etc-dnsmasq.d}
  
 
 **Step 3.2 - Portainer deployment:**
-Portainer → Containers → Add container
-Name: pihole
-Image: pihole/pihole:latest
-Network Mode: host
-Volumes:
+- Portainer → Containers → Add container
+- Name: pihole
+- Image: pihole/pihole:latest
+- Network Mode: host
+- Volumes:
 
 /home/lilking/pihole/etc-pihole:/etc/pihole
 
@@ -91,9 +91,9 @@ TZ=Australia/Sydney
 
 WEBPASSWORD=SecurePiHole2026!
 
-PIHOLE_DNS_=8.8.8.8
-Capabilities: NET_ADMIN
-Restart Policy: Always
+- PIHOLE_DNS_=8.8.8.8
+- Capabilities: NET_ADMIN
+- Restart Policy: Always
 
  
 
