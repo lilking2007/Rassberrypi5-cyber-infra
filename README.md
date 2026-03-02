@@ -14,7 +14,9 @@ Raspberry Pi 5 (8GB)
 - ├── A compatible 5v USB-C power supply
 - ├── Ethernet cable (monitoring accuracy)
 - ├── Mini LCD touchscreen (visual aesthetic)
- - dfa 
+    - ├── Driver: LCD-show
+    - ├── Resolution: 480x320
+    - └── Interface: SPI
 - └── Heatsink + fan (24/7 stability)
 
  
