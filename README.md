@@ -201,7 +201,7 @@ http://YOUR_PI_IP:3000
 
 ---
 
-## ✅ My Progress Checklist
+## ✅ Checklist
 
 ### **Phase 1: Base System**
 - [ ] OS flashed + expanded
