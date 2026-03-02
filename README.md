@@ -107,22 +107,22 @@ http://YOUR_PI_IP/admin
 ### **Phase 4: n8n Automation (5 mins)**
 
 **Step 4.1 - Prepare data:**
-mkdir -p ~/n8n_data
-sudo chown -R 1000:1000 ~/n8n_data
+- mkdir -p ~/n8n_data
+- sudo chown -R 1000:1000 ~/n8n_data
 
  
 
 **Step 4.2 - Deploy n8n:**
-docker run -d
---name n8n
--p 5678:5678
---restart unless-stopped
--v ~/n8n_data:/home/node/.n8n
--e N8N_BASIC_AUTH_ACTIVE=true
--e N8N_BASIC_AUTH_USER=ryan
--e N8N_BASIC_AUTH_PASSWORD=SecureN8N2026!
--e TZ=Australia/Sydney
-n8nio/n8n:latest
+- docker run -d
+- --name n8n
+- -p 5678:5678
+- --restart unless-stopped
+- -v ~/n8n_data:/home/node/.n8n
+- -e N8N_BASIC_AUTH_ACTIVE=true
+- -e N8N_BASIC_AUTH_USER=ryan
+- -e N8N_BASIC_AUTH_PASSWORD=SecureN8N2026!
+- -e TZ=Australia/Sydney
+- n8nio/n8n:latest
 
  
 
@@ -136,13 +136,13 @@ http://YOUR_PI_IP:5678
 ### **Phase 5: Filebrowser (3 mins)**
 
 **Step 5.1 - Portainer deployment:**
-Portainer → Add container
-Name: filebrowser
-Image: filebrowser/filebrowser:latest
-Ports: 8082:80
-Volumes: /:/srv
-Environment: FB_DATABASE=/database/filebrowser.db
-Restart Policy: Always
+- Portainer → Add container
+- Name: filebrowser
+- Image: filebrowser/filebrowser:latest
+- Ports: 8082:80
+- Volumes: /:/srv
+- Environment: FB_DATABASE=/database/filebrowser.db
+- Restart Policy: Always
 
  
 
@@ -162,18 +162,18 @@ mkdir -p ~/ntopng_data
  
 
 **Step 6.2 - Portainer deployment:**
-Portainer → Add container
-Name: ntopng
-Image: ntop/ntopng:latest
-Ports: 3000:3000
-Volumes:
+- Portainer → Add container
+- Name: ntopng
+- Image: ntop/ntopng:latest
+- Ports: 3000:3000
+- Volumes:
 
 ~/ntopng_data:/var/lib/ntopng
 
-/proc:/host/proc:ro
-Network Mode: host
-Privileged Mode: true
-Restart Policy: Always
+- /proc:/host/proc:ro
+- Network Mode: host
+- Privileged Mode: true
+- Restart Policy: Always
 
  
 
