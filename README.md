@@ -32,10 +32,10 @@ sudo raspi-config
  
 
 **Step 1.2 - Install Docker:**
-sudo apt update && sudo apt upgrade -y
-curl -sSL https://get.docker.com | sh
-sudo usermod -aG docker $USER
-newgrp docker
+- sudo apt update && sudo apt upgrade -y
+- curl -sSL https://get.docker.com | sh
+- sudo usermod -aG docker $USER
+- newgrp docker
 
  
 
@@ -49,14 +49,14 @@ docker run hello-world
 ### **Phase 2: Portainer Dashboard (5 mins)**
 
 **Step 2.1 - Create Portainer:**
-docker volume create portainer_data
-docker run -d
---name portainer
--p 9443:9443
---restart=always
--v /var/run/docker.sock:/var/run/docker.sock
--v portainer_data:/data
-portainer/portainer-ce:latest
+- docker volume create portainer_data
+- docker run -d
+- --name portainer
+- -p 9443:9443
+- --restart=always
+- -v /var/run/docker.sock:/var/run/docker.sock
+- -v portainer_data:/data
+- portainer/portainer-ce:latest
 
  
 
