@@ -15,7 +15,7 @@ Raspberry Pi 5 (8GB)
 ├── Ethernet cable (monitoring accuracy)
 └── Heatsink + fan (24/7 stability)
 
-text
+ 
 
 **Base OS:** Raspberry Pi OS 64-bit (Lite)
 
@@ -29,7 +29,7 @@ text
 sudo raspi-config
 
 → Advanced Options → Expand Filesystem → Finish → Reboot
-text
+ 
 
 **Step 1.2 - Install Docker:**
 sudo apt update && sudo apt upgrade -y
@@ -37,12 +37,12 @@ curl -sSL https://get.docker.com | sh
 sudo usermod -aG docker $USER
 newgrp docker
 
-text
+ 
 
 **Step 1.3 - Test Docker:**
 docker run hello-world
 
-text
+ 
 
 ---
 
@@ -58,12 +58,12 @@ docker run -d
 -v portainer_data:/data
 portainer/portainer-ce:latest
 
-text
+ 
 
 **Step 2.2 - Access dashboard:**
 https://YOUR_PI_IP:9443
 
-text
+ 
 *Accept self-signed certificate → Create admin account → Connect Local Docker*
 
 ---
@@ -73,7 +73,7 @@ text
 **Step 3.1 - Prepare folders:**
 mkdir -p ~/pihole/{etc-pihole,etc-dnsmasq.d}
 
-text
+ 
 
 **Step 3.2 - Portainer deployment:**
 Portainer → Containers → Add container
@@ -95,12 +95,12 @@ PIHOLE_DNS_=8.8.8.8
 Capabilities: NET_ADMIN
 Restart Policy: Always
 
-text
+ 
 
 **Step 3.3 - Access:**
 http://YOUR_PI_IP/admin
 
-text
+ 
 
 ---
 
@@ -110,7 +110,7 @@ text
 mkdir -p ~/n8n_data
 sudo chown -R 1000:1000 ~/n8n_data
 
-text
+ 
 
 **Step 4.2 - Deploy n8n:**
 docker run -d
@@ -124,12 +124,12 @@ docker run -d
 -e TZ=Australia/Sydney
 n8nio/n8n:latest
 
-text
+ 
 
 **Step 4.3 - Access:**
 http://YOUR_PI_IP:5678
 
-text
+ 
 
 ---
 
@@ -144,12 +144,12 @@ Volumes: /:/srv
 Environment: FB_DATABASE=/database/filebrowser.db
 Restart Policy: Always
 
-text
+ 
 
 **Step 5.2 - Access:**
 http://YOUR_PI_IP:8082
 
-text
+ 
 *Username: admin / Password: admin*
 
 ---
@@ -159,7 +159,7 @@ text
 **Step 6.1 - Prepare data:**
 mkdir -p ~/ntopng_data
 
-text
+ 
 
 **Step 6.2 - Portainer deployment:**
 Portainer → Add container
@@ -175,12 +175,12 @@ Network Mode: host
 Privileged Mode: true
 Restart Policy: Always
 
-text
+ 
 
 **Step 6.3 - Access:**
 http://YOUR_PI_IP:3000
 
-text
+ 
 
 ---
 
@@ -233,7 +233,7 @@ text
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock
 ghcr.io/red5d/docker-autocompose $(docker ps -q) > docker-compose.yml
 
-text
+ 
 
 ---
 
