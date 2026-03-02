@@ -14,9 +14,11 @@ Raspberry Pi 5 (8GB)
 - ├── A compatible 5v USB-C power supply
 - ├── Ethernet cable (monitoring accuracy)
 - ├── Mini LCD touchscreen (visual aesthetic)
-    - ├── Driver: LCD-show
-    - ├── Resolution: 480x320
-    - └── Interface: SPI
+    - ├── sudo rm -rf LCD-show
+    - ├── git clone https://github.com/goodtft/LCD-show.git
+    - ├── chmod -R 755 LCD-show
+    - ├── cd LCD-show/
+    - ├── sudo ./LCD35-show
 - └── Heatsink + fan (24/7 stability)
 
  
