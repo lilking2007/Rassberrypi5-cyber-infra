@@ -1,0 +1,76 @@
+version: "3.9"
+
+services:
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    ports:
+      - "9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+
+  pihole:
+    image: pihole/pihole:latest
+    container_name: pihole
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ}
+      WEBPASSWORD: ${PIHOLE_PASSWORD}
+      PIHOLE_DNS_: ${UPSTREAM_DNS}
+    volumes:
+      - ./data/pihole/etc-pihole:/etc/pihole
+      - ./data/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+    cap_add:
+      - NET_ADMIN
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      TZ: ${TZ}
+      N8N_BASIC_AUTH_ACTIVE: "true"
+      N8N_BASIC_AUTH_USER: ${N8N_USER}
+      N8N_BASIC_AUTH_PASSWORD: ${N8N_PASSWORD}
+    volumes:
+      - ./data/n8n:/home/node/.n8n
+
+  filebrowser:
+    image: filebrowser/filebrowser:latest
+    container_name: filebrowser
+    restart: unless-stopped
+    ports:
+      - "8082:80"
+    volumes:
+      - ./data/filebrowser:/srv
+
+  ntopng:
+    image: ntop/ntopng:latest
+    container_name: ntopng
+    network_mode: host
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - ./data/ntopng:/var/lib/ntopng
+      - /proc:/host/proc:ro
+
+  nanobot:
+    image: nanobot/your-image:latest
+    container_name: nanobot
+    restart: unless-stopped
+    ports:
+      - "8085:8085"
+    environment:
+      TZ: ${TZ}
+      NANOBOT_API_KEY: ${NANOBOT_API_KEY}
+    volumes:
+      - ./data/nanobot:/app/data
+
+volumes:
+  portainer_data:
