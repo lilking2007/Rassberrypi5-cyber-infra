@@ -317,3 +317,20 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
 ⚡ Runs 24/7.  
 🛡 Fully self-hosted.  
 🤖 AI-assisted monitoring.
+
+---
+
+# 🚀 3️⃣ My TRUE One-Shot Rebuild Command in seconds
+
+After flashing **Raspberry Pi OS fresh**, I can rebuild the entire infrastructure with few commands feel free to clone and explore in seconds:
+
+```bash
+curl -sSL https://get.docker.com | sh && \
+sudo usermod -aG docker $USER && \
+newgrp docker && \
+git clone https://github.com/lilking2007/Rassberrypi5-cyber-infra.git && \
+cd Rassberrypi5-cyber-infra && \
+cp .env.example .env && \
+mkdir -p data/{pihole/etc-pihole,pihole/etc-dnsmasq.d,n8n,filebrowser,ntopng,nanobot} && \
+sudo chown -R 1000:1000 data/n8n data/nanobot && \
+docker compose up -d
