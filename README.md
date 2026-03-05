@@ -322,7 +322,10 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
 
 # 🚀 3️⃣ My TRUE One-Shot Rebuild Command in seconds
 
-After flashing **Raspberry Pi OS fresh**, I can rebuild the entire infrastructure with few commands feel free to clone and explore in seconds:
+After flashing **Raspberry Pi OS**, I can rebuild the entire infrastructure with a few commands.  
+Feel free to clone and explore it in seconds.
+
+Before doing so, I recommend editing the **environment template (`.env.example`)**, as it contains the access variables used by the stack.
 
 ```bash
 curl -sSL https://get.docker.com | sh && \
