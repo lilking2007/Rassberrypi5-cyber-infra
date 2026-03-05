@@ -328,6 +328,8 @@ Feel free to clone and explore it in seconds.
 Before doing so, I recommend editing the **environment template (`.env.example`)**, as it contains the access variables used by the stack.
 
 ```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install git -y
 curl -sSL https://get.docker.com | sh && \
 sudo usermod -aG docker $USER && \
 newgrp docker && \
