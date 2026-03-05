@@ -1,4 +1,4 @@
-# 🚀 My Raspberry Pi 5 Home Lab – Cybersecurity Infrastructure
+# 🚀 My Raspberry Pi Home Lab – Cybersecurity Infrastructure
 
 I built this self-hosted lab on my Raspberry Pi 5 to create a professional-grade monitoring, DNS security, automation, and AI-assisted analysis environment for my cybersecurity studies.
 
