@@ -327,15 +327,25 @@ Feel free to clone and explore it in seconds.
 
 ```bash
 sudo apt update && sudo apt upgrade -y
+
 sudo apt install git -y
-curl -sSL https://get.docker.com | sh && \
-sudo usermod -aG docker $USER && \
-newgrp docker && \
-git clone https://github.com/lilking2007/Rassberrypi5-cyber-infra.git && \
-cd Rassberrypi5-cyber-infra && \
-cp .env.example .env && \
-mkdir -p data/{pihole/etc-pihole,pihole/etc-dnsmasq.d,n8n,filebrowser,ntopng,nanobot} && \
-sudo chown -R 1000:1000 data/n8n data/nanobot && \
+
+curl -sSL https://get.docker.com | sh
+
+sudo usermod -aG docker $USER
+
+newgrp docker
+
+git clone https://github.com/lilking2007/Rassberrypi5-cyber-infra.git
+
+cd Rassberrypi5-cyber-infra
+
+cp .env.example .env
+
+mkdir -p data/{pihole/etc-pihole,pihole/etc-dnsmasq.d,n8n,filebrowser,ntopng,nanobot}
+
+sudo chown -R 1000:1000 data/n8n data/nanobot
+
 docker compose up -d
 ```
 **Before you run this stack**
