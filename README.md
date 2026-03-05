@@ -325,8 +325,6 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
 After flashing **Raspberry Pi OS**, I can rebuild the entire infrastructure with a few commands.  
 Feel free to clone and explore it in seconds.
 
-Before doing so, I recommend editing the **environment template (`.env.example`)**, as it contains the access variables used by the stack.
-
 ```bash
 sudo apt update && sudo apt upgrade -y
 sudo apt install git -y
@@ -339,3 +337,20 @@ cp .env.example .env && \
 mkdir -p data/{pihole/etc-pihole,pihole/etc-dnsmasq.d,n8n,filebrowser,ntopng,nanobot} && \
 sudo chown -R 1000:1000 data/n8n data/nanobot && \
 docker compose up -d
+```
+**Before you run this stack**
+
+1. Copy the template and edit your own secrets:
+    ```bash
+    cp .env.example .env
+    nano .env
+    ```
+2. In `.env`, change:
+    - `PIHOLE_PASSWORD=` → set your own strong Pi-hole admin password  
+    - `N8N_USER=` and `N8N_PASSWORD=` → your own n8n login  
+    - `NANOBOT_API_KEY=` → your own AI API key (OpenRouter or other)  
+3. Save the file, then start the stack:
+    ```bash
+    docker compose up -d
+    ```
+4. **Never** commit your real `.env` back to GitHub – only `.env.example` stays in the repo.
