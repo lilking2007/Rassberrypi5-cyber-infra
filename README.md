@@ -280,7 +280,7 @@ hostname -I | awk '{print $1}'
 |----------|----------|
 |Docker Repository Mismatch|Edited `/etc/apt/sources.list.d/docker.list` to change `trixie` to `bookworm`|
 | Docker permissions | `newgrp docker, sudo chmod 666 /var/run/docker.sock` |
-| Pi-hole DNS not working | Set router DNS → PI_IP |
+| Pi-hole access log in | Password reset using `docker exec -it pihole pihole setpassword '# 12 character password' ` |
 | n8n folder permissions | `sudo chown -R 1000:1000 ~/n8n_data` |
 | ntopng no traffic | Network mode: host + Privileged true |
 | NanoBot file access | `sudo chown -R 1000:1000 ~/nanobot_data` |
