@@ -8,7 +8,7 @@ I built this self-hosted lab on my Raspberry Pi 5 to create a professional-grade
 
 **Device:** Raspberry Pi 5 (8GB)
 
-- 1TB microSD card (Class 10 A2)
+- 64gb microSD card (Class 10 A2)
 - Official 5V USB-C power supply
 - Ethernet connection (for monitoring accuracy)
 - Mini LCD touchscreen (visual aesthetic)
