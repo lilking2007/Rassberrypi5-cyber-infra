@@ -135,7 +135,7 @@ To apply ad-blocking to your entire network, update your Router's LAN/DNS settin
 
 **Secondary DNS:** 8.8.8.8 or 8.8.4.4 (Google Backup)
 
-*Why use a Secondary DNS? > If your Raspberry Pi is powered off or the pi-hole container stops, a secondary DNS (like 8.8.8.8 / 8.8.4.4) acts as a "Safety Net." It ensures your household doesn't lose internet access, though ads will not be blocked while the Pi is offline.*
+Why use a Secondary DNS? > If your Raspberry Pi is powered off or the pi-hole container stops, a secondary DNS (like 8.8.8.8 / 8.8.4.4) acts as a "Safety Net." It ensures your household doesn't lose internet access, though ads will not be blocked while the Pi is offline.
 ---
 
 # Phase 4 – n8n Automation (5 mins)
