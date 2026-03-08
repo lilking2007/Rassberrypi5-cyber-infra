@@ -278,7 +278,7 @@ hostname -I | awk '{print $1}'
 
 | Problem | Solution |
 |----------|----------|
-| Docker permissions | `newgrp docker` |
+| Docker permissions | `newgrp docker, sudo chmod 666 /var/run/docker.sock` |
 | Pi-hole DNS not working | Set router DNS → PI_IP |
 | n8n folder permissions | `sudo chown -R 1000:1000 ~/n8n_data` |
 | ntopng no traffic | Network mode: host + Privileged true |
