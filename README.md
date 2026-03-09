@@ -151,16 +151,35 @@ sudo chown -R 1000:1000 ~/n8n_data
 ## Step 4.2 – Deploy n8n
 
 ```bash
-docker run -d \
-  --name n8n \
-  -p 5678:5678 \
-  --restart unless-stopped \
-  -v ~/n8n_data:/home/node/.n8n \
-  -e N8N_BASIC_AUTH_ACTIVE=true \
-  -e N8N_BASIC_AUTH_USER=ryan \
-  -e N8N_BASIC_AUTH_PASSWORD=SecureN8N2026! \
-  -e TZ=Australia/Sydney \
-  n8nio/n8n:latest
+version: '3.8'
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    volumes:
+      - /home/lilking/n8n_data:/home/node/.n8n
+    environment:
+      # 1. Identity & Timezone
+      - TZ=Australia/Sydney
+      
+      # 2. Fix the "Secure Cookie" Error for Local IP access
+      - N8N_SECURE_COOKIE=false
+      
+      # 3. Security Credentials (Change these if you want!)
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=ryan
+      - N8N_BASIC_AUTH_PASSWORD=SecureN8N2026!
+      
+      # 4. 2026 Requirement: Encryption Key (Crucial for saving credentials)
+      - N8N_ENCRYPTION_KEY=rpi5-automation-secret-key-99
+      
+      # 5. Optimization for Raspberry Pi 5
+      - EXECUTIONS_DATA_PRUNE=true
+      - EXECUTIONS_DATA_MAX_AGE=168
+      - N8N_METRICS=true
 ```
 
 ## Step 4.3 – Access
