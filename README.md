@@ -162,24 +162,12 @@ services:
     volumes:
       - /home/lilking/n8n_data:/home/node/.n8n
     environment:
-      # 1. Identity & Timezone
-      - TZ=Australia/Sydney
-      
-      # 2. Fix the "Secure Cookie" Error for Local IP access
-      - N8N_SECURE_COOKIE=false
-      
-      # 3. Security Credentials (Change these if you want!)
       - N8N_BASIC_AUTH_ACTIVE=true
       - N8N_BASIC_AUTH_USER=ryan
       - N8N_BASIC_AUTH_PASSWORD=SecureN8N2026!
-      
-      # 4. 2026 Requirement: Encryption Key (Crucial for saving credentials)
+      - TZ=Australia/Sydney
+      - N8N_SECURE_COOKIE=false
       - N8N_ENCRYPTION_KEY=rpi5-automation-secret-key-99
-      
-      # 5. Optimization for Raspberry Pi 5
-      - EXECUTIONS_DATA_PRUNE=true
-      - EXECUTIONS_DATA_MAX_AGE=168
-      - N8N_METRICS=true
 ```
 
 ## Step 4.3 – Access
