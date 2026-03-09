@@ -294,12 +294,15 @@ hostname -I | awk '{print $1}'
 
 | Problem | Solution |
 |----------|----------|
-|Docker Repository Mismatch|Edited `/etc/apt/sources.list.d/docker.list` to change `trixie` to `bookworm`|
-| Docker permissions | `newgrp docker, sudo chmod 666 /var/run/docker.sock` |
-| Pi-hole access log in | Password reset using `docker exec -it pihole pihole setpassword '# 12 character password' ` |
-| n8n folder permissions | `sudo chown -R 1000:1000 ~/n8n_data` |
-| ntopng no traffic | Network mode: host + Privileged true |
-| NanoBot file access | `sudo chown -R 1000:1000 ~/nanobot_data` |
+| Portainer Permission Denied | Applied `newgrp docker` and `sudo chmod 666 /var/run/docker.sock` to allow the user to manage the Docker engine |
+| Portainer Repository Error | Fixed the **Trixie vs Bookworm** mismatch in `/etc/apt/sources.list.d/docker.list` to allow clean updates on the Pi 5 |
+| Pi-hole Locked Dashboard | Reset the forgotten admin password using `docker exec -it pihole pihole setpassword` |
+| n8n Login "Cannot GET" | Added `N8N_SECURE_COOKIE=false` to the stack environment to allow access via local IP (`192.168.x.x`) |
+| n8n YAML Format Error | Converted the terminal `docker run` script into a properly indented **Docker Compose stack** for the Web Editor |
+| n8n Permissions | Fixed the internal `node` user access with `sudo chown -R 1000:1000 ~/n8n_data` |
+| n8n Path Persistence | Updated the stack to use absolute path `/home/lilking/n8n_data` so workflows persist after reboot |
+| ntopng No Traffic | Enabled `network_mode: host` and `privileged: true` so the container can see the Pi network interface |
+| NanoBot File Access | Corrected directory ownership using `sudo chown -R 1000:1000 ~/nanobot_data` |
 
 ---
 
