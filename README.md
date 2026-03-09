@@ -185,7 +185,7 @@ http://YOUR_PI_IP:5678
 **Container Name:** filebrowser  
 **Image:** filebrowser/filebrowser:latest  
 **Ports:** 8082:80  
-**Volume:** `/:/srv #Bind `    
+**Volume:** `/:/srv #Bind the /:/ gives you full access to the SD card, and under host use /  `    
 **Environment:** name`FB_DATABASE` value`/database/filebrowser.db`  
 **Restart Policy:** Always  
 
