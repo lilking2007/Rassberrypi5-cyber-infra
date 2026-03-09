@@ -194,7 +194,7 @@ http://YOUR_PI_IP:5678
 **Environment:** name`FB_DATABASE` value`/database/filebrowser.db`  
 **Restart Policy:** Always  
 
-## step 5.2.2 - Deployment via ptainer using stacks 
+## step 5.2.2 - Deployment via potainer using stacks 
 
 Delet the brocken container: `docker rm -f filebrowser`
 
