@@ -180,7 +180,7 @@ http://YOUR_PI_IP:5678
 
 # Phase 5 – Filebrowser (3 mins)
 
-## step 5.1- Prep installation
+## step 5.1- Prepare Folders
 
 **create a directory**: `mkdir -p /home/USER/filebrowser_data`
 
