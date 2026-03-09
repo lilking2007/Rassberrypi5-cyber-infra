@@ -185,8 +185,8 @@ http://YOUR_PI_IP:5678
 **Container Name:** filebrowser  
 **Image:** filebrowser/filebrowser:latest  
 **Ports:** 8082:80  
-**Volume:** `/srv #(Bind) is the "Work Office" host: /`
-**Volume:** `/database #(Bind) is the "Personal Safe" host:/home/USERNAME/filebrowser_data `   
+**1Volume:** `/srv #(Bind) is the "Work Office" host: /`
+**2Volume:** `/database #(Bind) is the "Personal Safe" host:/home/USERNAME/filebrowser_data`   
 **Environment:** name`FB_DATABASE` value`/database/filebrowser.db`  
 **Restart Policy:** Always  
 
