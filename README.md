@@ -179,11 +179,12 @@ http://YOUR_PI_IP:5678
 ---
 
 # Phase 5 – Filebrowser (3 mins)
-## Prep installation
+
+## step 5.1- Prep installation
 
 **create a directory**: `mkdir -p /home/USER/filebrowser_data`
 
-## Deploy via Portainer
+## step 5.2.1 - Deploy via Portainer
 
 **Container Name:** filebrowser  
 **Image:** filebrowser/filebrowser:latest  
@@ -193,18 +194,39 @@ http://YOUR_PI_IP:5678
 **Environment:** name`FB_DATABASE` value`/database/filebrowser.db`  
 **Restart Policy:** Always  
 
-## Access
+## step 5.2.2 - Deployment via ptainer using stacks 
+
+Delet the brocken container: `docker rm -f filebrowser`
+
+```bash
+version: '3'
+services:
+  filebrowser:
+    image: filebrowser/filebrowser:latest
+    container_name: filebrowser
+    user: "0:0"  # This forces ROOT access for your cyber tools
+    ports:
+      - "8082:80"
+    volumes:
+      - /:/srv  # Full SD Card access
+      - /home/lilking/filebrowser_data:/database
+    environment:
+      - FB_DATABASE=/database/filebrowser.db
+      - FB_ROOT=/srv
+    restart: always
+```
+
+## step 5.3 - Access
 
 ```
 http://YOUR_PI_IP:8082
 ```
-
-Default login:
-
-```
-Username: admin
-Password: admin
-```
+login:
+- Go to Portainer -> Containers.
+- Click the Logs icon (the little document page) next to filebrowser.
+- Look for a line that says:
+- User 'admin' initialized with randomly generated password: [YOUR_PASSWORD]
+- Copy that password and use it to log in.
 
 ⚠ Change this immediately in production.
 
