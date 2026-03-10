@@ -405,27 +405,33 @@ After flashing **Raspberry Pi OS**, I can rebuild the entire infrastructure with
 Feel free to clone and explore it in seconds.
 
 ```bash
+# 1. System Prep
 sudo apt update && sudo apt upgrade -y
+sudo apt install git wget -y
 
-sudo apt install git -y
-
+# 2. Docker Install
 curl -sSL https://get.docker.com | sh
-
 sudo usermod -aG docker $USER
-
 newgrp docker
 
+# 3. Project Setup
 git clone https://github.com/lilking2007/Rassberrypi5-cyber-infra.git
-
 cd Rassberrypi5-cyber-infra
-
 cp .env.example .env
 
-mkdir -p data/{pihole/etc-pihole,pihole/etc-dnsmasq.d,n8n,filebrowser,ntopng,nanobot}
-
+# 4. Directory & Permission Setup
+mkdir -p data/{pihole/etc-pihole,pihole/etc-dnsmasq.d,n8n,filebrowser,nanobot}
 sudo chown -R 1000:1000 data/n8n data/nanobot
 
+# 5. Start Docker Stack
 docker compose up -d
+
+# 6. Native ntopng Install (The Bare Metal Component)
+wget https://packages.ntop.org/RaspberryPI/apt-ntop.deb
+sudo apt install ./apt-ntop.deb -y
+sudo apt update
+sudo apt install ntopng nprobe redis-server -y
+sudo systemctl enable --now redis-server ntopng
 ```
 **Before you run this stack**
 
