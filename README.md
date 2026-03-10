@@ -405,33 +405,70 @@ After flashing **Raspberry Pi OS**, I can rebuild the entire infrastructure with
 Feel free to clone and explore it in seconds.
 
 ```bash
-# 1. System Prep
+###############################################################################
+# 1. SYSTEM PREP & DOCKER INSTALLATION
+###############################################################################
 sudo apt update && sudo apt upgrade -y
 sudo apt install git wget -y
-
-# 2. Docker Install
 curl -sSL https://get.docker.com | sh
 sudo usermod -aG docker $USER
-newgrp docker
 
-# 3. Project Setup
+###############################################################################
+# 2. PROJECT CLONE & INITIAL SETUP
+###############################################################################
 git clone https://github.com/lilking2007/Rassberrypi5-cyber-infra.git
 cd Rassberrypi5-cyber-infra
 cp .env.example .env
 
-# 4. Directory & Permission Setup
+###############################################################################
+# 3. DIRECTORY & PERMISSION SETUP
+###############################################################################
 mkdir -p data/{pihole/etc-pihole,pihole/etc-dnsmasq.d,n8n,filebrowser,nanobot}
 sudo chown -R 1000:1000 data/n8n data/nanobot
 
-# 5. Start Docker Stack
+###############################################################################
+# 4. MANUAL CONFIGURATION STEP (NANO)
+# 🛑 STOP: The screen will now change to the Nano text editor.
+# 1. Use arrow keys to find NANOBOT_API_KEY, PIHOLE_PASSWORD, etc.
+# 2. Delete the 'your_key_here' placeholders and type your real secrets.
+# 3. Press [Ctrl + O] then [Enter] to Save.
+# 4. Press [Ctrl + X] to Exit and continue the script.
+###############################################################################
+echo "Opening .env file... Please enter your keys now."
+sleep 3
+nano .env
+
+###############################################################################
+# 5. REFRESH DOCKER PERMISSIONS
+###############################################################################
+# We use a 'Here Doc' to keep the script running after the permission change
+newgrp docker <<EONG
+
+###############################################################################
+# 6. LAUNCH DOCKER STACK (CONTAINERS)
+###############################################################################
 docker compose up -d
 
-# 6. Native ntopng Install (The Bare Metal Component)
+###############################################################################
+# 7. NATIVE NTOPNG INSTALL (BARE METAL)
+###############################################################################
 wget https://packages.ntop.org/RaspberryPI/apt-ntop.deb
 sudo apt install ./apt-ntop.deb -y
 sudo apt update
 sudo apt install ntopng nprobe redis-server -y
 sudo systemctl enable --now redis-server ntopng
+
+###############################################################################
+# 8. FINAL LAUNCH
+###############################################################################
+echo "-----------------------------------------------------------------------"
+echo "🚀 ALL SYSTEMS ARE ONLINE!"
+echo "Portainer:  https://$(hostname -I | awk '{print $1}'):9443"
+echo "ntopng:     http://$(hostname -I | awk '{print $1}'):3000"
+echo "Pi-hole:    http://$(hostname -I | awk '{print $1}')/admin"
+echo "-----------------------------------------------------------------------"
+
+EONG
 ```
 **Before you run this stack**
 
