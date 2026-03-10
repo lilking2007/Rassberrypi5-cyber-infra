@@ -241,7 +241,31 @@ login:
 
 # Phase 6 – ntopng Network Monitor (5 mins)
 
-## Step 6.1 – Prepare Data
+## Option A Pro INSTALLATION "Recommended" Step 6.1 – Prepare Data
+
+``` bash
+
+wget https://packages.ntop.org/RaspberryPI/apt-ntop.deb
+sudo apt install ./apt-ntop.deb
+sudo apt update
+
+```
+## Step 6.2 – Install ntopng & Redis
+
+``` bash
+
+sudo apt install ntopng nprobe redis-server -y
+
+```
+##Step 6.3 – Enable and Start Services
+
+``` bash
+sudo systemctl enable redis-server ntopng
+sudo systemctl start redis-server ntopng
+
+```
+
+## Option B INSTALLATION VIA DOCKER DEPLOYMENT Step 6.1 – Prepare Data
 
 ```bash
 mkdir -p ~/ntopng_data
