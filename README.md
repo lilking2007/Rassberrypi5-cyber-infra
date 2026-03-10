@@ -131,6 +131,10 @@ PIHOLE_DNS_=8.8.8.8
 ```
 http://YOUR_PI_IP/admin
 ```
+
+**Passwrod reset/set** `docker exec -it pihole pihole setpassword
+`
+
 ## Step 3.4 – Router Configuration & Redundancy
 
 To apply ad-blocking to your entire network, update your Router's LAN/DNS settings with the following:
