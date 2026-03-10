@@ -264,7 +264,7 @@ HOST:      /proc                         # Read-only
 ```
 
 **Network Mode:** host  
-**Privileged Mode:** true  
+**Runtime & resources:** Privileged mode = true  
 **Restart Policy:** Always  
 
 ## Step 6.3 – Access
