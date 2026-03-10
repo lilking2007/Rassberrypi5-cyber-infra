@@ -108,10 +108,10 @@ mkdir -p ~/pihole/{etc-pihole,etc-dnsmasq.d}
 
 ```
 CONTINER:/etc/pihole                                        # BIND
-HOST: /home/YOUR_USER/pihole/etc-pihole:/etc/pihole         # Writable
+HOST: /home/lilking/pihole/etc-pihole:/etc/pihole         # Writable
 
 CONTINER: /etc/dnsmasq.d                                    #BIND
-HOST: /home/YOUR_USER/pihole/etc-dnsmasq.d:/etc/dnsmasq.d   # Writable
+HOST: /home/lilking/pihole/etc-dnsmasq.d:/etc/dnsmasq.d   # Writable
 ```
 
 ### Environment Variables
@@ -250,14 +250,13 @@ mkdir -p ~/ntopng_data
 ## Step 6.2 – Deploy via Portainer
 
 **Container Name:** ntopng  
-**Image:** ntop/ntopng:latest  
-**Ports:** 3000:3000  
+**Image:** lucasheld/ntopng:latest
 
 ### Volumes
 
 ```
 CONTAINER: /var/lib/ntopng               # BIND
-HOST:      /home/YOUR_USER/ntopng_data     # Writable
+HOST:      /home/lilking/ntopng_data     # Writable
 
 CONTAINER: /host/proc                    # BIND
 HOST:      /proc                         # Read-only
