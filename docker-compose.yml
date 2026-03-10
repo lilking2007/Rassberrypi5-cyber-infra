@@ -1,7 +1,6 @@
 version: "3.9"
 
 services:
-
   portainer:
     image: portainer/portainer-ce:latest
     container_name: portainer
@@ -45,20 +44,15 @@ services:
     image: filebrowser/filebrowser:latest
     container_name: filebrowser
     restart: unless-stopped
+    user: "0:0"  # Ensures root access to your host files
     ports:
       - "8082:80"
     volumes:
-      - ./data/filebrowser:/srv
-
-  ntopng:
-    image: ntop/ntopng:latest
-    container_name: ntopng
-    network_mode: host
-    restart: unless-stopped
-    privileged: true
-    volumes:
-      - ./data/ntopng:/var/lib/ntopng
-      - /proc:/host/proc:ro
+      - /:/srv  # Maps full Pi storage for management
+      - ./data/filebrowser:/database
+    environment:
+      - FB_DATABASE=/database/filebrowser.db
+      - FB_ROOT=/srv
 
   nanobot:
     image: nanobot/your-image:latest
