@@ -107,12 +107,11 @@ mkdir -p ~/pihole/{etc-pihole,etc-dnsmasq.d}
 ### Volumes
 
 ```
-#BIND
-CONTINER:/etc/pihole
-HOST: /home/YOUR_USER/pihole/etc-pihole:/etc/pihole
-#BIND
-CONTINER: /etc/dnsmasq.d
-HOST: /home/YOUR_USER/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+CONTINER:/etc/pihole                                        # BIND
+HOST: /home/YOUR_USER/pihole/etc-pihole:/etc/pihole         # Writable
+
+CONTINER: /etc/dnsmasq.d                                    #BIND
+HOST: /home/YOUR_USER/pihole/etc-dnsmasq.d:/etc/dnsmasq.d   # Writable
 ```
 
 ### Environment Variables
@@ -257,8 +256,11 @@ mkdir -p ~/ntopng_data
 ### Volumes
 
 ```
-~/ntopng_data:/var/lib/ntopng
-/proc:/host/proc:ro
+CONTAINER: /var/lib/ntopng              # BIND
+HOST:      /home/lilking/ntopng_data    # Writable
+
+CONTAINER: /host/proc                    # BIND
+HOST:      /proc                         # Read-only
 ```
 
 **Network Mode:** host  
