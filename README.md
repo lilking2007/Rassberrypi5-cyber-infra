@@ -256,8 +256,8 @@ mkdir -p ~/ntopng_data
 ### Volumes
 
 ```
-CONTAINER: /var/lib/ntopng              # BIND
-HOST:      /home/lilking/ntopng_data    # Writable
+CONTAINER: /var/lib/ntopng               # BIND
+HOST:      /home/YOUR_USER/ntopng_data     # Writable
 
 CONTAINER: /host/proc                    # BIND
 HOST:      /proc                         # Read-only
