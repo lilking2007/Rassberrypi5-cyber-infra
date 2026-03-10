@@ -337,8 +337,8 @@ NanoBot summarizes Pi-hole and ntopng logs, generates reports, and helps design 
 | Portainer  | https://PI_IP:9443       | admin    | Your choice |
 | Pi-hole    | http://PI_IP/admin       | -        | SecurePiHole2026! |
 | n8n        | http://PI_IP:5678        | ryan     | SecureN8N2026! |
-| Filebrowser| http://PI_IP:8082        | admin    | admin (change) |
-| ntopng     | http://PI_IP:3000        | admin    | admin (change) |
+| Filebrowser| http://PI_IP:8082        | admin    | admin (change immediately) |
+| ntopng     | http://PI_IP:3000        | admin    | admin (inintial) / ntop-@Monitor#2026! |
 | NanoBot    | http://PI_IP:8085        | -        | Requires API key |
 
 Get your PI IP:
