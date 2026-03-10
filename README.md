@@ -107,8 +107,12 @@ mkdir -p ~/pihole/{etc-pihole,etc-dnsmasq.d}
 ### Volumes
 
 ```
-/home/YOUR_USER/pihole/etc-pihole:/etc/pihole
-/home/YOUR_USER/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+#BIND
+CONTINER:/etc/pihole
+HOST: /home/YOUR_USER/pihole/etc-pihole:/etc/pihole
+#BIND
+CONTINER: /etc/dnsmasq.d
+HOST: /home/YOUR_USER/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
 ```
 
 ### Environment Variables
