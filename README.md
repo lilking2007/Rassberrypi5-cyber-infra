@@ -257,7 +257,7 @@ sudo apt update
 sudo apt install ntopng nprobe redis-server -y
 
 ```
-##Step 6.3 – Enable and Start Services
+## Step 6.3 – Enable and Start Services
 
 ``` bash
 sudo systemctl enable redis-server ntopng
@@ -290,7 +290,7 @@ HOST:      /proc                         # Read-only
 **Runtime & resources:** Privileged mode = true  
 **Restart Policy:** Always  
 
-## Step 6.3 – Access
+## Step 6.3/4 – Access
 
 ```
 http://YOUR_PI_IP:3000
