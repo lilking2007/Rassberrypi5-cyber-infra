@@ -309,15 +309,24 @@ sudo chown -R 1000:1000 ~/nanobot_data
 
 ## Step 7.2 – Deploy NanoBot
 
+**Add stack**
+
 ```bash
-docker run -d \
-  --name nanobot \
-  -p 8085:8085 \
-  --restart unless-stopped \
-  -v ~/nanobot_data:/app/data \
-  -e TZ=Australia/Sydney \
-  -e NANO_API_KEY=YOUR_NANOBOT_KEY_HERE \
-  nanobot/your-image:latest
+version: '3.3'
+services:
+  nanobot:
+    image: nanobot/ai-agent:latest 
+    container_name: nanobot
+    restart: unless-stopped
+    ports:
+      - "8085:8085"
+    volumes:
+      - /home/lilking/nanobot_data:/app/data  # Updated to your username 'lilking'
+    environment:
+      - TZ=Australia/Sydney
+      - NANO_API_KEY=YOUR_ACTUAL_KEY_HERE
+      - PIHOLE_URL=http://192.168.1.XXX/admin # Use your Pi's actual IP
+      - NTOPNG_URL=http://192.168.1.XXX:3000   # Use your Pi's actual IP
 ```
 
 ## Step 7.3 – Access
