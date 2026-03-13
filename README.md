@@ -298,278 +298,103 @@ http://YOUR_PI_IP:3000
 
 ---
 
-# Phase 7 – NanoBot AI Agent CONTAINERIESED INSTALLATION (5 mins) 
-
-## Step 7.1 – Prepare Data
-
-```bash
-mkdir -p ~/nanobot_data
-sudo chown -R 1000:1000 ~/nanobot_data
-```
-
-## Step 7.2 – Deploy NanoBot
-
-**Add stack**
-
-```bash
-version: '3.3'
-services:
-  nanobot:
-    image: nanobot/ai-agent:latest 
-    container_name: nanobot
-    restart: unless-stopped
-    ports:
-      - "8085:8085"
-    volumes:
-      - /home/lilking/nanobot_data:/app/data  # Updated to your username 'lilking'
-    environment:
-      - TZ=Australia/Sydney
-      - NANO_API_KEY=YOUR_ACTUAL_KEY_HERE
-      - PIHOLE_URL=http://192.168.1.XXX/admin # Use your Pi's actual IP
-      - NTOPNG_URL=http://192.168.1.XXX:3000   # Use your Pi's actual IP
-```
-
-## Step 7.3 – Access
-
-```
-http://YOUR_PI_IP:8085
-```
-# Phase 7 – NanoBot AI Agent BARE MATAL INSTALLATION (Recommended)
+# Phase 7 – OpenClaw AI Agent (The Brain)
 
 > **Note:**  
-> This method runs NanoBot directly on the Raspberry Pi.  
-> It provides the AI **front-row access** to system tools (Pi-hole, ntopng, Portainer) and avoids Docker networking overhead.
+> OpenClaw replaces NanoBot.  
+> It runs on **Bare Metal** to ensure it has direct terminal access to manage Docker containers and ntopng.
 
 ---
 
-## Step 7.1 – Install NanoBot & Requirements
+## Step 7.1 – Install Requirements
 
-Install **Node.js** (required for the WhatsApp bridge) and then install **NanoBot**.
+OpenClaw requires **Node.js 22 or newer**.
 
 ```bash
-sudo apt update
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 ```
 
 ```bash
-sudo apt install -y nodejs npm
-```
-
-Install NanoBot:
-
-```bash
-python3 -m pip install --user --upgrade nanobot-ai --break-system-packages
+sudo apt install -y nodejs
 ```
 
 ---
 
-## Step 7.2 – Fix System PATH
+## Step 7.2 – Install OpenClaw
 
-Add the NanoBot binary directory to your system PATH so the `nanobot` command works globally.
-
-```bash
-echo 'export PATH="$PATH:$HOME/.local/bin"' >> ~/.bashrc
-```
-
-Apply the new PATH settings to the current terminal session.
+Install the OpenClaw AI agent.
 
 ```bash
-source ~/.bashrc
+curl -fsSL https://openclaw.ai/install.sh | bash
 ```
 
 ---
 
-## Step 7.3 – Configure NanoBot (API + WhatsApp Control)
+## Step 7.3 – Configuration (Onboarding)
 
-Create the NanoBot configuration directory.
-
-```bash
-mkdir -p ~/.nanobot/workspace
-```
-Create the configuration file.
+Run the interactive onboarding wizard to configure the AI agent and communication channels.
 
 ```bash
-cat <<EOF > ~/.nanobot/config.json
-{
-  "providers": {
-    "openrouter": {
-      "api_key": "YOUR_OPENROUTER_KEY_HERE"
-    }
-  },
-  "agents": {
-    "defaults": {
-      "model": "openrouter/google/gemini-2.0-flash-001"
-    }
-  },
-  "channels": {
-    "whatsapp": {
-      "enabled": true,
-      "allowFrom": ["614XXXXXXXXX"]
-    }
-  }
-}
-EOF
+openclaw onboard
 ```
 
-**Important:**  
-In `allowFrom`, enter your **Australian phone number in international format without the `+`**.
-
-Example:
+### Recommended Settings
 
 ```
-61412345678
+Mode: QuickStart
+Provider: OpenRouter
+Model: google/gemini-2.0-flash-001
+Search: Tavily (Free) or DuckDuckGo
+Channel: WhatsApp (scan the QR code in the terminal)
 ```
 
 ---
 
-## Step 7.4 – Link WhatsApp Device
+# 🔧 Service Access Summary
 
-To activate the WhatsApp control channel, link your phone.
-
-Run the login command:
-
-```bash
-nanobot channels login --channel whatsapp
-```
-
-A **QR code** will appear in the terminal.
-
-Open **WhatsApp on your phone**:
-
-```
-Settings → Linked Devices → Link a Device
-```
-
-Scan the QR code shown in the terminal.
-
-Once linked, the terminal will confirm the successful login.
-
----
-
-## Step 7.5 – Create Background Service
-
-Create a **systemd service** so NanoBot runs automatically in the background.
-
-```bash
-sudo nano /etc/systemd/system/nanobot.service
-```
-
-Paste the following configuration into the file.
-
-```ini
-[Unit]
-Description=NanoBot AI Agent Service
-After=network.target
-
-[Service]
-ExecStart=/home/lilking/.local/bin/nanobot gateway --port 8085
-WorkingDirectory=/home/lilking
-User=lilking
-Environment=HOST=0.0.0.0
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-```
-
-Save and exit:
-
-```
-Ctrl + O → Enter → Ctrl + X
-```
-
----
-
-## Step 7.6 – Enable and Start the Service
-
-Reload systemd to recognize the new service.
-
-```bash
-sudo systemctl daemon-reload
-```
-
-Enable NanoBot to start automatically at boot.
-
-```bash
-sudo systemctl enable nanobot
-```
-
-Start the NanoBot service.
-
-```bash
-sudo systemctl start nanobot
-```
-
----
-
-# 🔧 Quick Troubleshooting
-
-| Problem | Solution |
-|--------|---------|
-| `nanobot: command not found` | Run `source ~/.bashrc` |
-| WhatsApp not responding | Run `nanobot channels login --channel whatsapp` again |
-| Agent cannot see Pi-hole or ntopng | Ensure the AI agent has proper **Tool permissions** in `config.json` |
-| Web dashboard unreachable | Use **WhatsApp control instead** if the local network blocks port `8085` |
-
----
-
-NanoBot summarizes Pi-hole and ntopng logs, generates reports, and helps design new n8n automations.
-
----
-
-# 🎯 Service Access Summary
-
-| Service     | URL                     | Username | Password / Notes |
-|------------|--------------------------|----------|------------------|
-| Portainer  | https://PI_IP:9443       | admin    | Your choice |
-| Pi-hole    | http://PI_IP/admin       | -        | SecurePiHole2026! |
-| n8n        | http://PI_IP:5678        | ryan     | SecureN8N2026! |
-| Filebrowser| http://PI_IP:8082        | admin    | admin (change immediately) |
-| ntopng     | http://PI_IP:3000        | admin    | admin (inintial) / ntop-@Monitor#2026! |
-| NanoBot    | http://PI_IP:8085        | -        | Requires API key |
-
-Get your PI IP:
-
-```bash
-hostname -I | awk '{print $1}'
-```
+| Service | URL | Default Credentials |
+|--------|-----|---------------------|
+| OpenClaw | http://PI_IP:18789 | Web Dashboard |
+| Portainer | https://PI_IP:9443 | Admin setup on first visit |
+| Pi-hole | http://PI_IP/admin | SecurePiHole2026! |
+| ntopng | http://PI_IP:3000 | admin / admin |
+| n8n | http://PI_IP:5678 | ryan / SecureN8N2026! |
+| Filebrowser | http://PI_IP:8082 | admin (check logs for password) |
 
 ---
 
 # 🔧 Issues I Fixed
 
 | Problem | Solution |
-|----------|----------|
+|--------|----------|
 | Portainer Permission Denied | Applied `newgrp docker` and `sudo chmod 666 /var/run/docker.sock` to allow the user to manage the Docker engine |
 | Portainer Repository Error | Fixed the **Trixie vs Bookworm** mismatch in `/etc/apt/sources.list.d/docker.list` to allow clean updates on the Pi 5 |
 | Pi-hole Locked Dashboard | Reset the forgotten admin password using `docker exec -it pihole pihole setpassword` |
-| n8n Login "Cannot GET" | Added `N8N_SECURE_COOKIE=false` to the stack environment to allow access via local IP (`192.168.x.x`) |
-| n8n YAML Format Error | Converted the terminal `docker run` script into a properly indented **Docker Compose stack** for the Web Editor |
+| n8n Login "Cannot GET" | Added `N8N_SECURE_COOKIE=false` to allow access via local IP (`192.168.x.x`) |
+| n8n YAML Format Error | Converted the terminal `docker run` script into a properly indented **Docker Compose stack** |
 | n8n Permissions | Fixed the internal `node` user access with `sudo chown -R 1000:1000 ~/n8n_data` |
 | n8n Path Persistence | Updated the stack to use absolute path `/home/lilking/n8n_data` so workflows persist after reboot |
 | ntopng No Traffic | Enabled `network_mode: host` and `privileged: true` so the container can see the Pi network interface |
-| NanoBot File Access | Corrected directory ownership using `sudo chown -R 1000:1000 ~/nanobot_data` |
+| OpenClaw File Access | Corrected directory ownership and moved to **Bare Metal installation** to ensure the AI can execute `docker` and `systemctl` commands directly |
 
 ---
 
 # 🧠 Production Usage
 
-This is my real production cybersecurity lab.
+This is my **real production cybersecurity lab**.
 
 I use it to:
 
-- Monitor attacks from Dell Kali VMs  
-- Target a Surface Pro 7 victim machine  
-- Analyze logs with NanoBot  
-- Generate automated reports  
-- Build advanced automation workflows in n8n  
-
-Every command above is exactly what I ran to build this stack.
+- **Monitor Attacks:** Capture traffic from Dell Kali VMs  
+- **Target Simulation:** Analyze a Surface Pro 7 victim machine  
+- **AI Analysis:** Use OpenClaw to summarize ntopng traffic and Pi-hole DNS logs via WhatsApp / Telegram  
+- **Automated Defense:** Build advanced automation workflows in n8n to trigger alerts  
 
 ---
 
 # 📦 Full Stack Export (Optional)
 
-Generate a docker-compose file from running containers:
+Generate a `docker-compose.yml` file from running containers to back up your stack.
 
 ```bash
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
@@ -578,84 +403,38 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
 
 ---
 
-🔥 Built for cybersecurity practice.  
-⚡ Runs 24/7.  
-🛡 Fully self-hosted.  
-🤖 AI-assisted monitoring.
+# 🚀 My TRUE One-Shot Rebuild Command
 
----
-
-# 🚀 3️⃣ My TRUE One-Shot Rebuild Command in seconds
-
-After flashing **Raspberry Pi OS**, I can rebuild the entire infrastructure with a few commands.  
-Feel free to clone and explore it in seconds.
+After flashing **Raspberry Pi OS**, run the following commands to rebuild the entire infrastructure.
 
 ```bash
 ###############################################################################
-# 1. SYSTEM PREP, DOCKER & NODE.JS
+# 1. SYSTEM PREP & CORE TOOLS
 ###############################################################################
 sudo apt update && sudo apt upgrade -y
-sudo apt install git wget nodejs npm -y
+sudo apt install git wget curl nodejs npm -y
 curl -sSL https://get.docker.com | sh
 sudo usermod -aG docker $USER
 
 ###############################################################################
-# 2. NANOBOT NATIVE INSTALL (BARE METAL)
+# 2. OPENCLAW AI INSTALL (BARE METAL)
 ###############################################################################
-python3 -m pip install --user --upgrade nanobot-ai --break-system-packages
-echo 'export PATH="$PATH:$HOME/.local/bin"' >> ~/.bashrc
-export PATH="$PATH:$HOME/.local/bin"
+# Ensure Node 22+ for OpenClaw
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt install -y nodejs
+curl -fsSL https://openclaw.ai/install.sh | bash
 
 ###############################################################################
-# 3. PROJECT CLONE & INITIAL SETUP
+# 3. PROJECT CLONE & DIRECTORY SETUP
 ###############################################################################
 git clone https://github.com/lilking2007/Rassberrypi5-cyber-infra.git
 cd Rassberrypi5-cyber-infra
-cp .env.example .env
-
-###############################################################################
-# 4. DIRECTORY & PERMISSION SETUP
-###############################################################################
 mkdir -p data/{pihole/etc-pihole,pihole/etc-dnsmasq.d,n8n,filebrowser}
-mkdir -p ~/.nanobot/workspace
 sudo chown -R 1000:1000 data/n8n
 
 ###############################################################################
-# 5. MANUAL CONFIGURATION STEP (NANO)
+# 4. NTOPNG INSTALL (BARE METAL)
 ###############################################################################
-echo "Opening .env file... Please enter your keys now."
-sleep 3
-nano .env
-export $(grep -v '^#' .env | xargs)
-
-###############################################################################
-# 6. GENERATE NANOBOT CONFIG
-###############################################################################
-cat <<EOF > ~/.nanobot/config.json
-{
-  "providers": {
-    "openrouter": {
-      "api_key": "$NANOBOT_API_KEY"
-    }
-  },
-  "agents": {
-    "defaults": {
-      "model": "openrouter/google/gemini-2.0-flash-001"
-    }
-  },
-  "channels": {
-    "whatsapp": {
-      "enabled": true,
-      "allowFrom": ["$MY_PHONE_NUMBER"]
-    }
-  }
-}
-EOF
-
-###############################################################################
-# 7. NTOPNG INSTALL (BARE METAL)
-###############################################################################
-echo "📦 Installing ntopng Network Monitor..."
 wget https://packages.ntop.org/RaspberryPI/apt-ntop.deb
 sudo apt install ./apt-ntop.deb -y
 sudo apt update
@@ -663,56 +442,22 @@ sudo apt install ntopng nprobe redis-server -y
 sudo systemctl enable --now redis-server ntopng
 
 ###############################################################################
-# 8. LAUNCH DOCKER STACK
+# 5. LAUNCH DOCKER STACK
 ###############################################################################
 newgrp docker <<EONG
 docker compose up -d
-
-###############################################################################
-# 9. NANOBOT SERVICE SETUP
-###############################################################################
-sudo bash -c "cat <<EOF > /etc/systemd/system/nanobot.service
-[Unit]
-Description=NanoBot AI Agent Service
-After=network.target
-
-[Service]
-ExecStart=/home/$USER/.local/bin/nanobot gateway --port 8085
-WorkingDirectory=/home/$USER
-User=$USER
-Environment=HOST=0.0.0.0
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-EOF"
-
-sudo systemctl daemon-reload
-sudo systemctl enable nanobot
-sudo systemctl start nanobot
-
-echo "-----------------------------------------------------------------------"
-echo "🚀 ALL SYSTEMS ARE ONLINE!"
-echo "WhatsApp AI: Link your device now with: nanobot channels login"
-echo "Portainer:   https://$(hostname -I | awk '{print $1}'):9443"
-echo "ntopng:      http://$(hostname -I | awk '{print $1}'):3000"
-echo "Pi-hole:     http://$(hostname -I | awk '{print $1}')/admin"
-echo "-----------------------------------------------------------------------"
 EONG
-```
-**Before you run this stack**
 
-1. Copy the template and edit your own secrets:
-    ```bash
-    cp .env.example .env
-    nano .env
-    ```
-2. In `.env`, change:
-    - `PIHOLE_PASSWORD=` → set your own strong Pi-hole admin password  
-    - `N8N_USER=` and `N8N_PASSWORD=` → your own n8n login  
-    - `NANOBOT_API_KEY=` → your own AI API key (OpenRouter or other)  
-3. Save the file, then start the stack:
-    ```bash
-    docker compose up -d
-    ```
-4. **Never** commit your real `.env` back to GitHub – only `.env.example` stays in the repo.
+echo "-----------------------------------------------------------------------"
+echo "🚀 INFRASTRUCTURE REBUILT!"
+echo "AI SETUP: Run 'openclaw onboard' to link WhatsApp."
+echo "-----------------------------------------------------------------------"
+```
+
+---
+
+🔥 Built for cybersecurity practice.  
+🛡 Fully self-hosted.  
+🤖 OpenClaw AI-assisted monitoring.
+
+---
