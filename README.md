@@ -592,7 +592,7 @@ Feel free to clone and explore it in seconds.
 
 ```bash
 ###############################################################################
-# 1. SYSTEM PREP & DOCKER & NODE.JS INSTALLATION
+# 1. SYSTEM PREP, DOCKER & NODE.JS
 ###############################################################################
 sudo apt update && sudo apt upgrade -y
 sudo apt install git wget nodejs npm -y
@@ -604,7 +604,6 @@ sudo usermod -aG docker $USER
 ###############################################################################
 python3 -m pip install --user --upgrade nanobot-ai --break-system-packages
 echo 'export PATH="$PATH:$HOME/.local/bin"' >> ~/.bashrc
-# Load path for the current script session
 export PATH="$PATH:$HOME/.local/bin"
 
 ###############################################################################
@@ -627,12 +626,10 @@ sudo chown -R 1000:1000 data/n8n
 echo "Opening .env file... Please enter your keys now."
 sleep 3
 nano .env
-
-# Source the .env so the script can use the keys for config.json
 export $(grep -v '^#' .env | xargs)
 
 ###############################################################################
-# 6. GENERATE NANOBOT CONFIG (BARE METAL)
+# 6. GENERATE NANOBOT CONFIG
 ###############################################################################
 cat <<EOF > ~/.nanobot/config.json
 {
@@ -656,11 +653,9 @@ cat <<EOF > ~/.nanobot/config.json
 EOF
 
 ###############################################################################
-# 7. LAUNCH DOCKER STACK & NTOPNG
+# 7. NTOPNG INSTALL (BARE METAL)
 ###############################################################################
-newgrp docker <<EONG
-docker compose up -d
-
+echo "📦 Installing ntopng Network Monitor..."
 wget https://packages.ntop.org/RaspberryPI/apt-ntop.deb
 sudo apt install ./apt-ntop.deb -y
 sudo apt update
@@ -668,9 +663,14 @@ sudo apt install ntopng nprobe redis-server -y
 sudo systemctl enable --now redis-server ntopng
 
 ###############################################################################
-# 8. FINAL LAUNCH & NANOBOT SERVICE
+# 8. LAUNCH DOCKER STACK
 ###############################################################################
-# Creating the systemd service for NanoBot
+newgrp docker <<EONG
+docker compose up -d
+
+###############################################################################
+# 9. NANOBOT SERVICE SETUP
+###############################################################################
 sudo bash -c "cat <<EOF > /etc/systemd/system/nanobot.service
 [Unit]
 Description=NanoBot AI Agent Service
@@ -693,7 +693,7 @@ sudo systemctl start nanobot
 
 echo "-----------------------------------------------------------------------"
 echo "🚀 ALL SYSTEMS ARE ONLINE!"
-echo "WhatsApp AI: Link your device now with: nanobot channels login --channel whatsapp"
+echo "WhatsApp AI: Link your device now with: nanobot channels login"
 echo "Portainer:   https://$(hostname -I | awk '{print $1}'):9443"
 echo "ntopng:      http://$(hostname -I | awk '{print $1}'):3000"
 echo "Pi-hole:     http://$(hostname -I | awk '{print $1}')/admin"
