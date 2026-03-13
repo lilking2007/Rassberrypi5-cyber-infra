@@ -298,7 +298,7 @@ http://YOUR_PI_IP:3000
 
 ---
 
-# Phase 7 – NanoBot AI Agent (5 mins)
+# Phase 7 – NanoBot AI Agent CONTAINERIESED INSTALLATION (5 mins) 
 
 ## Step 7.1 – Prepare Data
 
@@ -334,6 +334,183 @@ services:
 ```
 http://YOUR_PI_IP:8085
 ```
+# Phase 7 – NanoBot AI Agent BARE MATAL INSTALLATION (Recommended)
+
+> **Note:**  
+> This method runs NanoBot directly on the Raspberry Pi.  
+> It provides the AI **front-row access** to system tools (Pi-hole, ntopng, Portainer) and avoids Docker networking overhead.
+
+---
+
+## Step 7.1 – Install NanoBot & Requirements
+
+Install **Node.js** (required for the WhatsApp bridge) and then install **NanoBot**.
+
+```bash
+sudo apt update
+```
+
+```bash
+sudo apt install -y nodejs npm
+```
+
+Install NanoBot:
+
+```bash
+python3 -m pip install --user --upgrade nanobot-ai --break-system-packages
+```
+
+---
+
+## Step 7.2 – Fix System PATH
+
+Add the NanoBot binary directory to your system PATH so the `nanobot` command works globally.
+
+```bash
+echo 'export PATH="$PATH:$HOME/.local/bin"' >> ~/.bashrc
+```
+
+Apply the new PATH settings to the current terminal session.
+
+```bash
+source ~/.bashrc
+```
+
+---
+
+## Step 7.3 – Configure NanoBot (API + WhatsApp Control)
+
+Create the NanoBot configuration directory.
+
+```bash
+mkdir -p ~/.nanobot/workspace
+```
+Create the configuration file.
+
+```bash
+cat <<EOF > ~/.nanobot/config.json
+{
+  "providers": {
+    "openrouter": {
+      "api_key": "YOUR_OPENROUTER_KEY_HERE"
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": "openrouter/google/gemini-2.0-flash-001"
+    }
+  },
+  "channels": {
+    "whatsapp": {
+      "enabled": true,
+      "allowFrom": ["614XXXXXXXXX"]
+    }
+  }
+}
+EOF
+```
+
+**Important:**  
+In `allowFrom`, enter your **Australian phone number in international format without the `+`**.
+
+Example:
+
+```
+61412345678
+```
+
+---
+
+## Step 7.4 – Link WhatsApp Device
+
+To activate the WhatsApp control channel, link your phone.
+
+Run the login command:
+
+```bash
+nanobot channels login --channel whatsapp
+```
+
+A **QR code** will appear in the terminal.
+
+Open **WhatsApp on your phone**:
+
+```
+Settings → Linked Devices → Link a Device
+```
+
+Scan the QR code shown in the terminal.
+
+Once linked, the terminal will confirm the successful login.
+
+---
+
+## Step 7.5 – Create Background Service
+
+Create a **systemd service** so NanoBot runs automatically in the background.
+
+```bash
+sudo nano /etc/systemd/system/nanobot.service
+```
+
+Paste the following configuration into the file.
+
+```ini
+[Unit]
+Description=NanoBot AI Agent Service
+After=network.target
+
+[Service]
+ExecStart=/home/lilking/.local/bin/nanobot gateway --port 8085
+WorkingDirectory=/home/lilking
+User=lilking
+Environment=HOST=0.0.0.0
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Save and exit:
+
+```
+Ctrl + O → Enter → Ctrl + X
+```
+
+---
+
+## Step 7.6 – Enable and Start the Service
+
+Reload systemd to recognize the new service.
+
+```bash
+sudo systemctl daemon-reload
+```
+
+Enable NanoBot to start automatically at boot.
+
+```bash
+sudo systemctl enable nanobot
+```
+
+Start the NanoBot service.
+
+```bash
+sudo systemctl start nanobot
+```
+
+---
+
+# 🔧 Quick Troubleshooting
+
+| Problem | Solution |
+|--------|---------|
+| `nanobot: command not found` | Run `source ~/.bashrc` |
+| WhatsApp not responding | Run `nanobot channels login --channel whatsapp` again |
+| Agent cannot see Pi-hole or ntopng | Ensure the AI agent has proper **Tool permissions** in `config.json` |
+| Web dashboard unreachable | Use **WhatsApp control instead** if the local network blocks port `8085` |
+
+---
 
 NanoBot summarizes Pi-hole and ntopng logs, generates reports, and helps design new n8n automations.
 
