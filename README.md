@@ -592,52 +592,75 @@ Feel free to clone and explore it in seconds.
 
 ```bash
 ###############################################################################
-# 1. SYSTEM PREP & DOCKER INSTALLATION
+# 1. SYSTEM PREP & DOCKER & NODE.JS INSTALLATION
 ###############################################################################
 sudo apt update && sudo apt upgrade -y
-sudo apt install git wget -y
+sudo apt install git wget nodejs npm -y
 curl -sSL https://get.docker.com | sh
 sudo usermod -aG docker $USER
 
 ###############################################################################
-# 2. PROJECT CLONE & INITIAL SETUP
+# 2. NANOBOT NATIVE INSTALL (BARE METAL)
+###############################################################################
+python3 -m pip install --user --upgrade nanobot-ai --break-system-packages
+echo 'export PATH="$PATH:$HOME/.local/bin"' >> ~/.bashrc
+# Load path for the current script session
+export PATH="$PATH:$HOME/.local/bin"
+
+###############################################################################
+# 3. PROJECT CLONE & INITIAL SETUP
 ###############################################################################
 git clone https://github.com/lilking2007/Rassberrypi5-cyber-infra.git
 cd Rassberrypi5-cyber-infra
 cp .env.example .env
 
 ###############################################################################
-# 3. DIRECTORY & PERMISSION SETUP
+# 4. DIRECTORY & PERMISSION SETUP
 ###############################################################################
-mkdir -p data/{pihole/etc-pihole,pihole/etc-dnsmasq.d,n8n,filebrowser,nanobot}
-sudo chown -R 1000:1000 data/n8n data/nanobot
+mkdir -p data/{pihole/etc-pihole,pihole/etc-dnsmasq.d,n8n,filebrowser}
+mkdir -p ~/.nanobot/workspace
+sudo chown -R 1000:1000 data/n8n
 
 ###############################################################################
-# 4. MANUAL CONFIGURATION STEP (NANO)
-# 🛑 STOP: The screen will now change to the Nano text editor.
-# 1. Use arrow keys to find NANOBOT_API_KEY, PIHOLE_PASSWORD, etc.
-# 2. Delete the 'your_key_here' placeholders and type your real secrets.
-# 3. Press [Ctrl + O] then [Enter] to Save.
-# 4. Press [Ctrl + X] to Exit and continue the script.
+# 5. MANUAL CONFIGURATION STEP (NANO)
 ###############################################################################
 echo "Opening .env file... Please enter your keys now."
 sleep 3
 nano .env
 
-###############################################################################
-# 5. REFRESH DOCKER PERMISSIONS
-###############################################################################
-# We use a 'Here Doc' to keep the script running after the permission change
-newgrp docker <<EONG
+# Source the .env so the script can use the keys for config.json
+export $(grep -v '^#' .env | xargs)
 
 ###############################################################################
-# 6. LAUNCH DOCKER STACK (CONTAINERS)
+# 6. GENERATE NANOBOT CONFIG (BARE METAL)
 ###############################################################################
+cat <<EOF > ~/.nanobot/config.json
+{
+  "providers": {
+    "openrouter": {
+      "api_key": "$NANOBOT_API_KEY"
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": "openrouter/google/gemini-2.0-flash-001"
+    }
+  },
+  "channels": {
+    "whatsapp": {
+      "enabled": true,
+      "allowFrom": ["$MY_PHONE_NUMBER"]
+    }
+  }
+}
+EOF
+
+###############################################################################
+# 7. LAUNCH DOCKER STACK & NTOPNG
+###############################################################################
+newgrp docker <<EONG
 docker compose up -d
 
-###############################################################################
-# 7. NATIVE NTOPNG INSTALL (BARE METAL)
-###############################################################################
 wget https://packages.ntop.org/RaspberryPI/apt-ntop.deb
 sudo apt install ./apt-ntop.deb -y
 sudo apt update
@@ -645,15 +668,36 @@ sudo apt install ntopng nprobe redis-server -y
 sudo systemctl enable --now redis-server ntopng
 
 ###############################################################################
-# 8. FINAL LAUNCH
+# 8. FINAL LAUNCH & NANOBOT SERVICE
 ###############################################################################
+# Creating the systemd service for NanoBot
+sudo bash -c "cat <<EOF > /etc/systemd/system/nanobot.service
+[Unit]
+Description=NanoBot AI Agent Service
+After=network.target
+
+[Service]
+ExecStart=/home/$USER/.local/bin/nanobot gateway --port 8085
+WorkingDirectory=/home/$USER
+User=$USER
+Environment=HOST=0.0.0.0
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF"
+
+sudo systemctl daemon-reload
+sudo systemctl enable nanobot
+sudo systemctl start nanobot
+
 echo "-----------------------------------------------------------------------"
 echo "🚀 ALL SYSTEMS ARE ONLINE!"
-echo "Portainer:  https://$(hostname -I | awk '{print $1}'):9443"
-echo "ntopng:     http://$(hostname -I | awk '{print $1}'):3000"
-echo "Pi-hole:    http://$(hostname -I | awk '{print $1}')/admin"
+echo "WhatsApp AI: Link your device now with: nanobot channels login --channel whatsapp"
+echo "Portainer:   https://$(hostname -I | awk '{print $1}'):9443"
+echo "ntopng:      http://$(hostname -I | awk '{print $1}'):3000"
+echo "Pi-hole:     http://$(hostname -I | awk '{print $1}')/admin"
 echo "-----------------------------------------------------------------------"
-
 EONG
 ```
 **Before you run this stack**
