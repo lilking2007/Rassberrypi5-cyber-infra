@@ -44,27 +44,15 @@ services:
     image: filebrowser/filebrowser:latest
     container_name: filebrowser
     restart: unless-stopped
-    user: "0:0"  # Ensures root access to your host files
+    user: "0:0"
     ports:
       - "8082:80"
     volumes:
-      - /:/srv  # Maps full Pi storage for management
+      - /:/srv
       - ./data/filebrowser:/database
     environment:
       - FB_DATABASE=/database/filebrowser.db
       - FB_ROOT=/srv
-
-  nanobot:
-    image: nanobot/your-image:latest
-    container_name: nanobot
-    restart: unless-stopped
-    ports:
-      - "8085:8085"
-    environment:
-      TZ: ${TZ}
-      NANOBOT_API_KEY: ${NANOBOT_API_KEY}
-    volumes:
-      - ./data/nanobot:/app/data
 
 volumes:
   portainer_data:
