@@ -357,6 +357,9 @@ curl --socks5-hostname localhost:9050 https://check.torproject.org/api/ip
 
 If successful, the response will show a **Tor exit node IP address**.
 
+## Step 7.4 – Activation on the browser 
+
+> installation of "proxy switch omega" extension 
 ---
 
 # Phase 8 – OpenClaw AI Agent (The Brain)
