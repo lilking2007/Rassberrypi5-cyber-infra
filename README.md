@@ -359,7 +359,11 @@ If successful, the response will show a **Tor exit node IP address**.
 
 ## Step 7.4 – Activation on the browser 
 
-> installation of "proxy switch omega" extension 
+> installation of "proxy switch omega" extension
+> - Net profile 
+> - Protocol: SOCKS5
+> - Server (IP): (Your Pi's IP)
+> - Port: 9050
 ---
 
 # Phase 8 – OpenClaw AI Agent (The Brain)
