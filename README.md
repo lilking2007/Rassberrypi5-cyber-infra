@@ -298,17 +298,78 @@ http://YOUR_PI_IP:3000
 
 ---
 
-# Phase 7 – OpenClaw AI Agent (The Brain)
-
-> **Note:**  
-> OpenClaw replaces NanoBot.  
-> It runs on **Bare Metal** to ensure it has direct terminal access to manage Docker containers and ntopng.
+# Phase 7 – Tor Anonymity Proxy (3 mins)
 
 ---
 
-## Step 7.1 – Install Requirements
+## Step 7.1 – Prepare Data Folder
 
-OpenClaw requires **Node.js 22 or newer**.
+Create a persistent data directory for the Tor proxy container.
+
+```bash
+mkdir -p ~/tor_proxy_data
+```
+
+```bash
+sudo chown -R 1000:1000 ~/tor_proxy_data
+```
+
+---
+
+## Step 7.2 – Deploy via Portainer (Stacks)
+
+Create a new **Portainer Stack** named:
+
+```
+tor-proxy
+```
+
+Paste the following configuration.
+
+```yaml
+version: '3.8'
+services:
+  tor:
+    image: dperson/torproxy:latest
+    container_name: tor-proxy
+    restart: unless-stopped
+    ports:
+      - "9050:9050"  # SOCKS5 Proxy
+      - "9051:9051"  # Control Port
+    environment:
+      - TZ=Australia/Sydney
+      - SOCKS_POLICY=accept 192.168.0.0/16
+    volumes:
+      - /home/lilking/tor_proxy_data:/var/lib/tor
+```
+
+Deploy the stack to start the Tor proxy service.
+
+---
+
+## Step 7.3 – Verify Connection
+
+Run the following command to confirm your Raspberry Pi is routing traffic through Tor.
+
+```bash
+curl --socks5-hostname localhost:9050 https://check.torproject.org/api/ip
+```
+
+If successful, the response will show a **Tor exit node IP address**.
+
+---
+
+# Phase 8 – OpenClaw AI Agent (The Brain)
+
+> **Note:**  
+> OpenClaw replaces NanoBot.  
+> It runs on **Bare Metal** to ensure direct terminal access for managing Docker, ntopng, and system services.
+
+---
+
+## Step 8.1 – Install Requirements
+
+Install **Node.js 22+**, which is required by OpenClaw.
 
 ```bash
 curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
@@ -320,7 +381,7 @@ sudo apt install -y nodejs
 
 ---
 
-## Step 7.2 – Install OpenClaw
+## Step 8.2 – Install OpenClaw
 
 Install the OpenClaw AI agent.
 
@@ -330,36 +391,29 @@ curl -fsSL https://openclaw.ai/install.sh | bash
 
 ---
 
-## Step 7.3 – Configuration (Onboarding)
+## Step 8.3 – Configuration (Onboarding)
 
-Run the interactive onboarding wizard to configure the AI agent and communication channels.
+Run the interactive onboarding wizard.
 
 ```bash
 openclaw onboard
 ```
 
-### Recommended Settings
-
-```
-Mode: QuickStart
-Provider: OpenRouter
-Model: google/gemini-2.0-flash-001
-Search: Tavily (Free) or DuckDuckGo
-Channel: WhatsApp (scan the QR code in the terminal)
-```
+Follow the prompts to configure your AI provider and communication channel.
 
 ---
 
 # 🔧 Service Access Summary
 
-| Service | URL | Default Credentials |
-|--------|-----|---------------------|
+| Service | URL / Access | Default Credentials |
+|--------|--------------|--------------------|
+| Tor Proxy | SOCKS5: `PI_IP:9050` | No UI (Proxy only) |
 | OpenClaw | http://PI_IP:18789 | Web Dashboard |
-| Portainer | https://PI_IP:9443 | Admin setup on first visit |
+| Portainer | https://PI_IP:9443 | Admin setup |
 | Pi-hole | http://PI_IP/admin | SecurePiHole2026! |
 | ntopng | http://PI_IP:3000 | admin / admin |
 | n8n | http://PI_IP:5678 | ryan / SecureN8N2026! |
-| Filebrowser | http://PI_IP:8082 | admin (check logs for password) |
+| Filebrowser | http://PI_IP:8082 | admin (check logs) |
 
 ---
 
@@ -367,15 +421,11 @@ Channel: WhatsApp (scan the QR code in the terminal)
 
 | Problem | Solution |
 |--------|----------|
-| Portainer Permission Denied | Applied `newgrp docker` and `sudo chmod 666 /var/run/docker.sock` to allow the user to manage the Docker engine |
-| Portainer Repository Error | Fixed the **Trixie vs Bookworm** mismatch in `/etc/apt/sources.list.d/docker.list` to allow clean updates on the Pi 5 |
-| Pi-hole Locked Dashboard | Reset the forgotten admin password using `docker exec -it pihole pihole setpassword` |
-| n8n Login "Cannot GET" | Added `N8N_SECURE_COOKIE=false` to allow access via local IP (`192.168.x.x`) |
-| n8n YAML Format Error | Converted the terminal `docker run` script into a properly indented **Docker Compose stack** |
-| n8n Permissions | Fixed the internal `node` user access with `sudo chown -R 1000:1000 ~/n8n_data` |
-| n8n Path Persistence | Updated the stack to use absolute path `/home/lilking/n8n_data` so workflows persist after reboot |
-| ntopng No Traffic | Enabled `network_mode: host` and `privileged: true` so the container can see the Pi network interface |
-| OpenClaw File Access | Corrected directory ownership and moved to **Bare Metal installation** to ensure the AI can execute `docker` and `systemctl` commands directly |
+| Tor Permission Denied | Created `~/tor_proxy_data` and applied `chown -R 1000:1000` before deployment |
+| Portainer Permission Denied | Applied `newgrp docker` and `sudo chmod 666 /var/run/docker.sock` |
+| Pi-hole Locked Dashboard | Reset password using `docker exec -it pihole pihole setpassword` |
+| ntopng No Traffic | Enabled `network_mode: host` and `privileged: true` |
+| OpenClaw File Access | Moved to **Bare Metal installation** for full system control |
 
 ---
 
