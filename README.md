@@ -16,7 +16,7 @@ I built this self-hosted lab on my Raspberry Pi 5 to create a professional-grade
 
 ### LCD Setup Commands
 
-```bash
+```yaml
 sudo rm -rf LCD-show
 git clone https://github.com/goodtft/LCD-show.git
 chmod -R 755 LCD-show
@@ -37,7 +37,7 @@ sudo ./LCD35-show 180 # orientation based on screeen preference
 
 ## Step 1.1 – First Boot Setup
 
-```bash
+```yaml
 sudo raspi-config
 ```
 
@@ -49,7 +49,7 @@ Advanced Options → Expand Filesystem → Finish → Reboot
 
 ## Step 1.2 – Install Docker
 
-```bash
+```yaml
 sudo apt update && sudo apt upgrade -y
 curl -sSL https://get.docker.com | sh
 sudo usermod -aG docker $USER
@@ -58,7 +58,7 @@ newgrp docker
 
 ## Step 1.3 – Test Docker
 
-```bash
+```yaml
 docker run hello-world
 ```
 
@@ -68,7 +68,7 @@ docker run hello-world
 
 ## Step 2.1 – Deploy Portainer
 
-```bash
+```yaml
 docker volume create portainer_data
 
 docker run -d \
@@ -94,7 +94,7 @@ Accept the self-signed certificate → Create admin account → Connect Local Do
 
 ## Step 3.1 – Prepare Folders
 
-```bash
+```yaml
 mkdir -p ~/pihole/{etc-pihole,etc-dnsmasq.d}
 ```
 
@@ -150,14 +150,14 @@ To apply ad-blocking to your entire network, update your Router's LAN/DNS settin
 
 ## Step 4.1 – Prepare Data
 
-```bash
+```yaml
 mkdir -p ~/n8n_data
 sudo chown -R 1000:1000 ~/n8n_data
 ```
 
 ## Step 4.2 – Deploy n8n
 
-```bash
+```yaml
 version: '3.8'
 services:
   n8n:
@@ -205,7 +205,7 @@ http://YOUR_PI_IP:5678
 
 Delet the brocken container: `docker rm -f filebrowser`
 
-```bash
+```yaml
 version: '3'
 services:
   filebrowser:
@@ -243,7 +243,7 @@ login:
 
 ## Option A Pro INSTALLATION "Recommended" Step 6.1 – Prepare Data
 
-``` bash
+``` yaml
 
 wget https://packages.ntop.org/RaspberryPI/apt-ntop.deb
 sudo apt install ./apt-ntop.deb
@@ -252,14 +252,14 @@ sudo apt update
 ```
 ## Step 6.2 – Install ntopng & Redis
 
-``` bash
+``` yaml
 
 sudo apt install ntopng nprobe redis-server -y
 
 ```
 ## Step 6.3 – Enable and Start Services
 
-``` bash
+``` yaml
 sudo systemctl enable redis-server ntopng
 sudo systemctl start redis-server ntopng
 
@@ -267,7 +267,7 @@ sudo systemctl start redis-server ntopng
 
 ## Option B INSTALLATION VIA DOCKER DEPLOYMENT Step 6.1 – Prepare Data
 
-```bash
+```yaml
 mkdir -p ~/ntopng_data
 ```
 
@@ -306,11 +306,11 @@ http://YOUR_PI_IP:3000
 
 Create a persistent data directory for the Tor proxy container.
 
-```bash
+```yaml
 mkdir -p ~/tor_proxy_data
 ```
 
-```bash
+```yaml
 sudo chown -R 1000:1000 ~/tor_proxy_data
 ```
 
@@ -351,7 +351,7 @@ Deploy the stack to start the Tor proxy service.
 
 Run the following command to confirm your Raspberry Pi is routing traffic through Tor.
 
-```bash
+```yaml
 curl --socks5-hostname localhost:9050 https://check.torproject.org/api/ip
 ```
 
@@ -371,11 +371,11 @@ If successful, the response will show a **Tor exit node IP address**.
 
 Install **Node.js 22+**, which is required by OpenClaw.
 
-```bash
+```yaml
 curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 ```
 
-```bash
+```yaml
 sudo apt install -y nodejs
 ```
 
@@ -385,7 +385,7 @@ sudo apt install -y nodejs
 
 Install the OpenClaw AI agent.
 
-```bash
+```yaml
 curl -fsSL https://openclaw.ai/install.sh | bash
 ```
 
@@ -395,7 +395,7 @@ curl -fsSL https://openclaw.ai/install.sh | bash
 
 Run the interactive onboarding wizard.
 
-```bash
+```yaml
 openclaw onboard
 ```
 
@@ -446,7 +446,7 @@ I use it to:
 
 Generate a `docker-compose.yml` file from running containers to back up your stack.
 
-```bash
+```yaml
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
   ghcr.io/red5d/docker-autocompose $(docker ps -q) > docker-compose.yml
 ```
@@ -457,7 +457,7 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
 
 After flashing **Raspberry Pi OS**, run the following commands to rebuild the entire infrastructure.
 
-```bash
+```yaml
 ###############################################################################
 # 1. SYSTEM PREP & CORE TOOLS
 ###############################################################################
