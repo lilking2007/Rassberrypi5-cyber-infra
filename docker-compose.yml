@@ -54,5 +54,18 @@ services:
       - FB_DATABASE=/database/filebrowser.db
       - FB_ROOT=/srv
 
+  tor-proxy:
+    image: dperson/torproxy:latest
+    container_name: tor-proxy
+    restart: unless-stopped
+    ports:
+      - "9050:9050"
+      - "9051:9051"
+    environment:
+      - TZ=${TZ}
+      - SOCKS_POLICY=accept 192.168.0.0/16
+    volumes:
+      - ./data/tor:/var/lib/tor
+
 volumes:
   portainer_data:
