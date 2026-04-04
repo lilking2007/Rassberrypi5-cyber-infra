@@ -1,2 +1,221 @@
+# ============================================================================
+# GITIGNORE - Raspberry Pi 5 Cybersecurity Lab
+# ============================================================================
+# This file prevents accidental commits of sensitive data, local configs,
+# and build artifacts to your Git repository
+# ============================================================================
+
+# ============================================================================
+# SENSITIVE DATA - CRITICAL TO EXCLUDE
+# ============================================================================
 .env
+.env.local
+.env.*.local
+.env.prod
+.env.dev
+.env.staging
+*.key
+*.pem
+secret*.txt
+credentials.txt
+api_keys.txt
+tokens.txt
+
+# ============================================================================
+# DATA DIRECTORIES (Local volumes - NOT for Git)
+# ============================================================================
+# These contain persistent data from running containers
+# They should be backed up separately, not committed to Git
 data/
+logs/
+*.log
+*.log.*
+
+# Pi-hole Configuration & Data
+pihole/
+etc-pihole/
+etc-dnsmasq.d/
+
+# n8n Workflows & Credentials
+n8n_data/
+n8n/
+
+# ntopng Network Data
+ntopng_data/
+ntopng/
+*.rrd
+
+# Tor Proxy Data
+tor_proxy_data/
+tor/
+tor_node_data/
+
+# Filebrowser Files & Database
+filebrowser_data/
+filebrowser_db/
+
+# DVWA Database
+dvwa_data/
+dvwa_database/
+
+# Database Files
+*.sql
+*.db
+*.sqlite
+*.sqlite3
+*.dump
+backup/
+backups/
+
+# ============================================================================
+# TEMPORARY & BUILD ARTIFACTS
+# ============================================================================
+tmp/
+temp/
+cache/
+.cache/
+build/
+dist/
+*.tar
+*.tar.gz
+*.zip
+*.rar
+
+# OS Files
+.DS_Store
+Thumbs.db
+.directory
+
+# Editor Swap Files
+*.swp
+*.swo
+*~
+.~*
+
+# ============================================================================
+# IDE & EDITOR CONFIGURATION
+# ============================================================================
+# IDE-specific settings should not be committed (they're local preferences)
+.vscode/
+.idea/
+*.iml
+*.sublime-workspace
+.atom/
+.project
+.classpath
+.settings/
+*.iws
+*.ipr
+
+# ============================================================================
+# PROGRAMMING LANGUAGE BUILD ARTIFACTS
+# ============================================================================
+
+# Node.js / NPM
+node_modules/
+npm-debug.log
+npm-debug.log.*
+yarn-error.log
+package-lock.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+venv/
+env/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Go
+*.o
+*.a
+*.so
+.DS_Store
+dist/
+
+# ============================================================================
+# DOCKER-SPECIFIC FILES
+# ============================================================================
+Dockerfile.dev
+Dockerfile.local
+docker-compose.dev.yml
+docker-compose.local.yml
+docker-compose.override.yml
+.dockerignore
+
+# ============================================================================
+# CI/CD PIPELINE FILES
+# ============================================================================
+.github/workflows/secrets.yml
+.gitlab-ci.yml.local
+.travis.yml.local
+Jenkinsfile.local
+
+# ============================================================================
+# SYSTEM & SHELL FILES
+# ============================================================================
+.bash_history
+.zsh_history
+.fish_history
+.ssh/
+.ssh/*
+!.ssh/config
+authorized_keys
+id_rsa
+id_dsa
+id_ed25519
+
+# ============================================================================
+# BACKUP & ARCHIVE FILES
+# ============================================================================
+*.backup
+*.bak
+*.old
+*.orig
+*.tmp
+*.temp
+
+# ============================================================================
+# SYSTEM-GENERATED FILES
+# ============================================================================
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+desktop.ini
+
+# ============================================================================
+# IMPORTANT REMINDER
+# ============================================================================
+# DO NOT COMMIT:
+# - Passwords, API keys, tokens, credentials
+# - Database files with sensitive data
+# - Private SSH keys
+# - Docker volumes with sensitive data
+# - Configuration files with hardcoded secrets
+# - Backup files containing personal information
+#
+# USE INSTEAD:
+# - Environment variables (.env files)
+# - Secret management tools
+# - Docker secrets
+# - Secure credential vaults
+# ============================================================================
