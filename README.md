@@ -503,12 +503,23 @@ sudo systemctl enable --now redis-server ntopng
 ###############################################################################
 # 5. LAUNCH DOCKER STACK
 ###############################################################################
-newgrp docker <<EONG
-docker compose up -d
-EONG
+# Ensure we have an active .env file before launching
+if [ ! -f .env ]; then
+    cp .env.example .env
+    echo "⚠️ Created .env from template. Edit this later to change passwords."
+fi
+
+# Create the network manually to be safe
+sudo docker network create lab-network || true
+
+# Launch with sudo to bypass the need for a logout/relogin
+sudo docker compose up -d
 
 echo "-----------------------------------------------------------------------"
 echo "🚀 INFRASTRUCTURE REBUILT!"
+echo "PI-HOLE: http://<your-ip>/admin"
+echo "NTOPNG:  http://<your-ip>:3000"
+echo "N8N:     http://<your-ip>:5678"
 echo "AI SETUP: Run 'openclaw onboard' to link WhatsApp."
 echo "-----------------------------------------------------------------------"
 ```
