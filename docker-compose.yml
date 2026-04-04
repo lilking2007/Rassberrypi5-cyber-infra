@@ -5,7 +5,200 @@ services:
     image: portainer/portainer-ce:latest
     container_name: portainer
     restart: unless-stopped
+    portsversion: "3.9"
+
+networks:
+  lab-network:
+    driver: bridge
+
+volumes:
+  portainer_data:
+  pihole_data:
+  n8n_data:
+  ntopng_data:
+  dvwa_data:
+  tor_data:
+  filebrowser_data:
+
+services:
+  # ============================================================================
+  # MANAGEMENT & ORCHESTRATION
+  # ============================================================================
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
     ports:
+      - "9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - lab-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "https://localhost:9443"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ============================================================================
+  # SECURITY & DNS
+  # ============================================================================
+
+  pihole:
+    image: pihole/pihole:latest
+    container_name: pihole
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ}
+      WEBPASSWORD: ${PIHOLE_PASSWORD}
+      PIHOLE_DNS_: ${UPSTREAM_DNS}
+    volumes:
+      - ./data/pihole/etc-pihole:/etc/pihole
+      - ./data/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+    cap_add:
+      - NET_ADMIN
+    healthcheck:
+      test: ["CMD", "dig", "@127.0.0.1", "pi.hole"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  tor-proxy:
+    image: dperson/torproxy:latest
+    container_name: tor-proxy
+    restart: unless-stopped
+    ports:
+      - "9050:9050"
+      - "9051:9051"
+    environment:
+      - TZ=${TZ}
+      - SOCKS_POLICY=accept 192.168.0.0/16
+    volumes:
+      - ./data/tor:/var/lib/tor
+    networks:
+      - lab-network
+    healthcheck:
+      test: ["CMD", "curl", "--socks5-hostname", "localhost:9050", "https://check.torproject.org/api/ip"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+
+  # ============================================================================
+  # NETWORK MONITORING
+  # ============================================================================
+
+  ntopng:
+    image: lucasheld/ntopng:latest
+    container_name: ntopng
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      TZ: ${TZ}
+    volumes:
+      - ./data/ntopng:/var/lib/ntopng
+      - /proc:/host/proc:ro
+    network_mode: host
+    privileged: true
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ============================================================================
+  # AUTOMATION & WORKFLOWS
+  # ============================================================================
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      TZ: ${TZ}
+      N8N_BASIC_AUTH_ACTIVE: "true"
+      N8N_BASIC_AUTH_USER: ${N8N_USER}
+      N8N_BASIC_AUTH_PASSWORD: ${N8N_PASSWORD}
+      N8N_SECURE_COOKIE: "false"
+    volumes:
+      - ./data/n8n:/home/node/.n8n
+    networks:
+      - lab-network
+    depends_on:
+      - pihole
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5678/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ============================================================================
+  # FILE MANAGEMENT (SECURE - NON-ROOT USER)
+  # ============================================================================
+
+  filebrowser:
+    image: filebrowser/filebrowser:latest
+    container_name: filebrowser
+    restart: unless-stopped
+    user: "1000:1000"
+    ports:
+      - "8082:80"
+    volumes:
+      - ./data/filebrowser:/srv
+      - ./data/filebrowser_db:/database
+    environment:
+      - FB_DATABASE=/database/filebrowser.db
+      - FB_ROOT=/srv
+    networks:
+      - lab-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ============================================================================
+  # VULNERABLE TARGET (FOR SECURITY TESTING)
+  # ============================================================================
+
+  dvwa:
+    image: vulnerables/web-dvwa:latest
+    container_name: dvwa
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      - MYSQL_PASS=${DVWA_DB_PASSWORD}
+    networks:
+      - lab-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      description: "Damn Vulnerable Web App - Target for offensive security testing"
+
+# ============================================================================
+# SERVICE ACCESS GUIDE
+# ============================================================================
+# Portainer (Container Management): https://PI_IP:9443
+# Pi-hole (DNS Security):           http://PI_IP/admin
+# ntopng (Network Monitoring):      http://PI_IP:3000
+# n8n (Automation Workflows):       http://PI_IP:5678
+# Filebrowser (File Management):    http://PI_IP:8082
+# DVWA (Vulnerable Target):         http://PI_IP:8080
+# Tor SOCKS5 Proxy:                 PI_IP:9050
+# ============================================================================
+
       - "9443:9443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
